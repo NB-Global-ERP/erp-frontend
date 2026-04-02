@@ -4,9 +4,9 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from '@suspensive/react';
 import './index.css'
 import App from './App.tsx'
-import {Spinner} from "./components/ui/Spinner.tsx";
+import {Spinner} from "@/components/ui/Spinner.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {TIME} from "./utils/constants.ts";
+import {TIME} from "@/utils/constants.ts";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -17,6 +17,8 @@ const queryClient = new QueryClient({
         },
     },
 });
+
+document.documentElement.classList.add('wx-willow-theme');
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,5 +1,5 @@
 import type {ButtonHTMLAttributes, ReactNode} from "react";
-import {cn} from "../../utils/formatters.ts";
+import {cn} from "@/utils/formatters.ts";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode;

@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+.wx-willow-theme {
+    --wx-color-primary: var(--color-primary-500);
+    --wx-color-primary-light: var(--color-primary-100);
+    --wx-color-primary-dark: var(--color-primary-700);
+
+    --wx-table-background: white;
+    --wx-table-select-background: var(--color-primary-50);
+    --wx-table-select-focus-background: var(--color-primary-100);
+    --wx-table-select-color: var(--color-gray-900);
+    --wx-table-border: 1px solid var(--color-gray-200);
+    --wx-table-select-border: inset 3px 0 var(--color-primary-500);
+
+    --wx-table-header-border: var(--wx-table-border);
+    --wx-table-header-cell-border: var(--wx-table-border);
+    --wx-table-header-background: var(--color-gray-50);
+    --wx-header-font-weight: 600;
+    --wx-header-color: var(--color-gray-700);
+
+    --wx-table-footer-cell-border: var(--wx-table-border);
+    --wx-table-cell-border: var(--wx-table-border);
+    --wx-table-cell-color: var(--color-gray-800);
+    --wx-table-cell-hover-background: var(--color-gray-50);
+
+    --wx-table-fixed-column-right-border: 3px solid var(--color-gray-200);
+    --wx-table-fixed-column-left-border: 3px solid var(--color-gray-200);
+
+    --wx-table-editor-dropdown-border: var(--wx-table-border);
+    --wx-table-editor-dropdown-shadow: 0px 4px 20px 0px rgba(44, 47, 60, 0.12);
+    --wx-table-editor-input-border: var(--color-gray-300);
+    --wx-table-editor-input-focus-border: var(--color-primary-500);
+
+    --wx-table-row-even-background: white;
+    --wx-table-row-odd-background: var(--color-gray-50);
+
+    --wx-scrollbar-track: var(--color-gray-100);
+    --wx-scrollbar-thumb: var(--color-gray-400);
+    --wx-scrollbar-thumb-hover: var(--color-gray-500);
+
+    --wx-button-primary-background: var(--color-primary-500);
+    --wx-button-primary-hover-background: var(--color-primary-600);
+    --wx-button-primary-color: white;
+    --wx-button-secondary-background: var(--color-gray-100);
+    --wx-button-secondary-hover-background: var(--color-gray-200);
+    --wx-button-secondary-color: var(--color-gray-700);
+}
+
+.wx-table-box, .wx-body, .wx-header {
+    width: 100% !important;
+}
+
+.wx-cell {
+    width: 100% !important;
+}
+
+.wx-willow-theme .menu {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 20px 0px rgba(44, 47, 60, 0.12);
+    outline: 1px solid var(--color-gray-200);
+    border: none;
+}
+
+.wx-willow-theme .menu .menu-item {
+    color: var(--color-gray-700);
+    padding: 8px 12px;
+    transition: all 0.2s;
+}
+
+.wx-willow-theme .menu .menu-item:hover {
+    background: var(--color-primary-50);
+    color: var(--color-primary-600);
+}
+
+.wx-willow-theme .wx-grid-row.wx-selected {
+    background: var(--color-primary-50) !important;
+}
+
+.wx-willow-theme .wx-grid-row.wx-selected .wx-grid-cell {
+    background: transparent !important;
+}
+
+.wx-willow-theme .wx-grid-header-cell {
+    font-weight: 600;
+    color: var(--color-gray-700);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.wx-willow-theme .wx-grid-header-cell:hover {
+    background: var(--color-gray-100);
+}
+
+.wx-willow-theme .wx-toolbar {
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 12px;
+}
+
+.wx-willow-theme .wx-toolbar button {
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: var(--color-gray-700);
+    transition: all 0.2s;
+}
+
+.wx-willow-theme .wx-toolbar button:hover {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-300);
+    color: var(--color-primary-600);
+}
+
+.wx-willow-theme ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.wx-willow-theme ::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+    border-radius: 4px;
+}
+
+.wx-willow-theme ::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: 4px;
+}
+
+.wx-willow-theme ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+}
+
+.wx-willow-theme .wx-loading {
+    color: var(--color-primary-500);
+}
+
+.wx-willow-theme .wx-pagination {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.wx-willow-theme .wx-pagination button {
+    background: white;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--color-gray-700);
+}
+
+.wx-willow-theme .wx-pagination button:hover {
+    background: var(--color-primary-50);
+    border-color: var(--color-primary-300);
+}
+
+.wx-willow-theme .wx-pagination .wx-active {
+    background: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+    color: white;
+}
+
+.wx-willow-theme .wx-grid-editor {
+    border: 2px solid var(--color-primary-500) !important;
+    border-radius: 4px;
+    box-shadow: 0 0 0 2px rgba(144, 43, 245, 0.2);
+}
+
+.wx-willow-theme .wx-filter-row .wx-filter-cell input {
+    border: 1px solid var(--color-gray-300);
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.wx-willow-theme .wx-filter-row .wx-filter-cell input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 2px rgba(144, 43, 245, 0.2);
+}
