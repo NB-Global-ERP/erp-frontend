@@ -1,6 +1,4 @@
 import {Grid, Toolbar, Willow} from "@svar-ui/react-grid";
-import "@svar-ui/react-grid/all.css";
-import '@/styles/svar-theme.css';
 import {useState, useMemo} from "react";
 import {formatPercent} from "@/utils/formatters.ts";
 

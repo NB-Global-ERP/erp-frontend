@@ -19,7 +19,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 <main
                     className={cn(
                         'flex-1 transition-all duration-300',
-                        sidebarOpen ? 'ml-64' : 'ml-0'
+                        sidebarOpen ? 'ml-32' : 'ml-0'
                     )}
                 >
                     {children}

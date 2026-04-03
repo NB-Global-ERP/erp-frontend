@@ -14,7 +14,7 @@
 
     --wx-table-header-border: var(--wx-table-border);
     --wx-table-header-cell-border: var(--wx-table-border);
-    --wx-table-header-background: var(--color-gray-50);
+    --wx-table-header-background: var(--color-gray-100);
     --wx-header-font-weight: 600;
     --wx-header-color: var(--color-gray-700);
 
@@ -44,6 +44,61 @@
     --wx-button-secondary-background: var(--color-gray-100);
     --wx-button-secondary-hover-background: var(--color-gray-200);
     --wx-button-secondary-color: var(--color-gray-700);
+
+    --wx-gantt-border-color: var(--color-gray-100);
+    --wx-gantt-border: 1px solid var(--color-gray-200);
+    --wx-gantt-form-header-border: none;
+    --wx-gantt-icon-color: var(--color-gray-400);
+
+    --wx-gantt-bar-font: 400 13px var(--wx-font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
+    --wx-gantt-marker-font: 500 12px var(--wx-font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
+    --wx-tooltip-font: 400 12px var(--wx-font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
+
+    --wx-gantt-bar-border-radius: 4px;
+    --wx-gantt-milestone-border-radius: 50%;
+
+    --wx-gantt-critical-color: var(--color-danger);
+
+    --wx-gantt-task-color: var(--color-primary-400);
+    --wx-gantt-task-font-color: #ffffff;
+    --wx-gantt-task-fill-color: var(--color-secondary-500);
+    --wx-gantt-task-border-color: var(--color-primary-600);
+    --wx-gantt-task-critical-color: var(--wx-gantt-critical-color);
+    --wx-gantt-task-critical-fill-color: var(--color-danger);
+
+    --wx-gantt-task-slack-color: var(--color-primary-50);
+    --wx-gantt-task-slack-border-color: var(--color-primary-200);
+
+    --wx-gantt-summary-color: var(--color-secondary-500);
+    --wx-gantt-summary-font-color: #ffffff;
+    --wx-gantt-summary-fill-color: var(--color-secondary-600);
+    --wx-gantt-summary-border-color: var(--color-secondary-700);
+    --wx-gantt-summary-critical-color: var(--color-danger);
+    --wx-gantt-summary-critical-fill-color: var(--color-danger);
+
+    --wx-gantt-milestone-color: var(--color-primary-400);
+
+    --wx-gantt-select-color: var(--color-primary-100);
+
+    --wx-gantt-link-color: var(--color-gray-400);
+    --wx-gantt-link-color-hovered: var(--color-gray-500);
+    --wx-gantt-link-critical-color: var(--color-danger);
+    --wx-gantt-link-critical-color-hovered: #b22e2e;
+    --wx-gantt-link-marker-background: var(--color-gray-100);
+    --wx-gantt-link-marker-color: var(--color-gray-400);
+
+    --wx-gantt-progress-border-color: var(--color-gray-300);
+
+    --wx-gantt-holiday-background: var(--color-gray-50);
+    --wx-gantt-holiday-color: var(--color-gray-400);
+
+    --wx-gantt-marker-font-color: #ffffff;
+    --wx-gantt-marker-color: var(--color-primary-400);
+
+    --wx-tooltip-font-color: #ffffff;
+    --wx-tooltip-background: var(--color-gray-700);
+
+    --wx-sidebar-close-icon: var(--color-gray-400);
 }
 
 .wx-table-box, .wx-body, .wx-header {
@@ -57,7 +112,7 @@
 .wx-willow-theme .menu {
     background: white;
     border-radius: 8px;
-    box-shadow: 0px 4px 20px 0px rgba(44, 47, 60, 0.12);
+    box-shadow: 0 4px 20px 0 rgba(44, 47, 60, 0.12);
     outline: 1px solid var(--color-gray-200);
     border: none;
 }
@@ -179,4 +234,20 @@
     outline: none;
     border-color: var(--color-primary-500);
     box-shadow: 0 0 0 2px rgba(144, 43, 245, 0.2);
+}
+
+.wx-gantt .wx-bar.wx-task:hover {
+    filter: brightness(0.95);
+    cursor: pointer;
+}
+
+.wx-gantt .wx-content {
+    font-weight: 500;
+    font-size: 12px;
+    padding: 0 8px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.wx-bar .wx-content {
+    font-weight: 700;
 }

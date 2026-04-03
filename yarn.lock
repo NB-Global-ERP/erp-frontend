@@ -698,7 +698,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svar-ui/gantt-locales@npm:2.6.1":
+"@svar-ui/gantt-locales@npm:2.6.1, @svar-ui/gantt-locales@npm:^2.6.1":
   version: 2.6.1
   resolution: "@svar-ui/gantt-locales@npm:2.6.1"
   checksum: 10c0/bc24ac3ac7fbc615b075453603e6252312099e46d9a79f4842d7e0547fc6f50e1ce3bf03629a1bf2c2c1f1cd7478751ae76fa966d988f255c26be7668a98ed0e
@@ -816,7 +816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svar-ui/react-core@npm:2.5.0":
+"@svar-ui/react-core@npm:2.5.0, @svar-ui/react-core@npm:^2.5.0":
   version: 2.5.0
   resolution: "@svar-ui/react-core@npm:2.5.0"
   dependencies:
@@ -1936,6 +1936,8 @@ __metadata:
     "@hookform/resolvers": "npm:^5.2.2"
     "@suspensive/react": "npm:^3.20.2"
     "@suspensive/react-query": "npm:^3.20.2"
+    "@svar-ui/gantt-locales": "npm:^2.6.1"
+    "@svar-ui/react-core": "npm:^2.5.0"
     "@svar-ui/react-gantt": "npm:^2.6.1"
     "@svar-ui/react-grid": "npm:^2.6.1"
     "@tailwindcss/postcss": "npm:^4.2.2"

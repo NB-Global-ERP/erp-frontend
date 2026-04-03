@@ -13,6 +13,8 @@
     "@hookform/resolvers": "^5.2.2",
     "@suspensive/react": "^3.20.2",
     "@suspensive/react-query": "^3.20.2",
+    "@svar-ui/gantt-locales": "^2.6.1",
+    "@svar-ui/react-core": "^2.5.0",
     "@svar-ui/react-gantt": "^2.6.1",
     "@svar-ui/react-grid": "^2.6.1",
     "@tanstack/react-query": "^5.96.1",

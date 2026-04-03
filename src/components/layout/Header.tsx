@@ -1,4 +1,4 @@
-import { Menu, Bell } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useUIStore } from '@/stores/uiStore';
 
 export function Header() {
@@ -12,18 +12,11 @@ export function Header() {
                         onClick={toggleSidebar}
                         className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                        <Menu className="w-5 h-5 text-gray-600" />
+                        <Menu className="w-10 h-10 text-gray-700" />
                     </button>
-                    <h1 className="text-xl font-semibold text-gray-800">
-                        ERP Learning Platform
+                    <h1 className="text-[28px] font-semibold text-gray-700">
+                        Центр развития персонала
                     </h1>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
-                        <Bell className="w-5 h-5 text-gray-600" />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
                 </div>
             </div>
         </header>
