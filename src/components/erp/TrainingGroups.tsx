@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import {formatCurrency} from "@/utils/formatters.ts";
 import ru from "@/utils/ru.ts";
 import { Locale } from '@svar-ui/react-core';
+import {STATUS} from "@/utils/constants.ts";
 
 export function TrainingGroups() {
     const [showForm, setShowForm] = useState(false);
@@ -17,16 +18,16 @@ export function TrainingGroups() {
     const columns = [
         { id: 'courseName', header: 'Курс', width: 200,
             format: (value: any, row: any) => row.courseId },
-        { id: 'startDate', header: 'Дата начала', width: 120,
+        { id: 'startDate', header: 'Дата начала', width: 120, editor: 'datepicker',
             format: (value: Date) => value?.toLocaleDateString('ru-RU') },
-        { id: 'endDate', header: 'Дата окончания', width: 120,
+        { id: 'endDate', header: 'Дата окончания', width: 120, editor: 'datepicker',
             format: (value: Date) => value?.toLocaleDateString('ru-RU') },
         { id: 'participantCount', header: 'Участников', width: 100 },
         { id: 'averageProgress', header: 'Прогресс, %', width: 100,
             format: (value: number) => `${value}%` },
         { id: 'totalCost', header: 'Стоимость, ₽', width: 150,
             format: (value: number) => formatCurrency(value) },
-        { id: 'status', header: 'Статус', width: 120 },
+        { id: 'status', header: 'Статус', width: 120, editor: { type: 'combo', }, options: STATUS },
     ];
 
     const toolbarItems = [

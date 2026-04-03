@@ -26,6 +26,13 @@ export const DEPARTMENTS = [
     { id: 'marketing', name: 'Marketing', budget: 600000, head: 'Смирнова О.Н.' },
 ] as const;
 
+export const STATUS = [
+    {id: 1, label: "Планируется", value: "planned"},
+    {id: 2, label: "В процессе", value: "in_progress"},
+    {id: 3, label: "Завершено", value: "completed"},
+    {id: 4, label: "Отменено", value: "cancelled"}
+] as const;
+
 export const USER_ROLES = {
     ADMIN: { value: 'admin', label: 'Администратор', level: 100 },
     MANAGER: { value: 'manager', label: 'Руководитель', level: 50 },

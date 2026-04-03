@@ -138,7 +138,6 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                         </div>
                     </form>
 
-                    {/* Выбор групп */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Учебные группы
@@ -172,7 +171,6 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                         </div>
                     </div>
 
-                    {/* Итоги */}
                     {selectedGroups.length > 0 && (
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                             <div className="flex justify-between">

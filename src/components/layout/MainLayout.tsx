@@ -14,12 +14,12 @@ export function MainLayout({ children }: MainLayoutProps) {
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
-            <div className="flex">
+            <div className="flex w-full">
                 <Sidebar />
                 <main
                     className={cn(
                         'flex-1 transition-all duration-300',
-                        sidebarOpen ? 'ml-32' : 'ml-0'
+                        sidebarOpen ? 'ml-24 w-[calc(100%-96px)]' : 'ml-0 w-full',
                     )}
                 >
                     {children}

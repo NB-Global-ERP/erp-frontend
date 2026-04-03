@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
 import { GroupParticipants } from './GroupParticipants';
 import { X } from 'lucide-react';
+import {STATUS} from "@/utils/constants.ts";
 
 const groupSchema = z.object({
     courseId: z.string().min(1, 'Выберите курс'),
@@ -31,7 +32,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
 
     const existingGroup = groupId ? groups.find(g => g.id === groupId) : null;
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<GroupFormData>({
+    const { register, handleSubmit, formState: { errors } } = useForm<GroupFormData>({
         resolver: zodResolver(groupSchema),
         defaultValues: existingGroup ? {
             courseId: existingGroup.courseId,
@@ -75,7 +76,6 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-                {/* Header */}
                 <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-800">
                         {groupId ? 'Редактирование группы' : 'Создание группы'}
@@ -85,7 +85,6 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                     </button>
                 </div>
 
-                {/* Tabs */}
                 <div className="flex border-b border-gray-200 px-6">
                     <button
                         onClick={() => setActiveTab('info')}
@@ -109,7 +108,6 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                     </button>
                 </div>
 
-                {/* Content */}
                 <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
                     {activeTab === 'info' && (
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -119,11 +117,11 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                 </label>
                                 <select
                                     {...register('courseId')}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    className="w-full px-3 py-2 rounded-lg focus:outline-none"
                                 >
                                     <option value="">Выберите курс</option>
                                     {courses.map(course => (
-                                        <option key={course.id} value={course.id}>
+                                        <option className="py-1 text-gray-900 bg-white hover:bg-primary-50" key={course.id} value={course.id}>
                                             {course.name} ({course.pricePerPerson.toLocaleString('ru-RU')} ₽/чел)
                                         </option>
                                     ))}
@@ -141,7 +139,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                     <input
                                         type="date"
                                         {...register('startDate')}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                                     />
                                     {errors.startDate && (
                                         <p className="mt-1 text-sm text-red-600">{errors.startDate.message}</p>
@@ -154,7 +152,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                     <input
                                         type="date"
                                         {...register('endDate')}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                                     />
                                     {errors.endDate && (
                                         <p className="mt-1 text-sm text-red-600">{errors.endDate.message}</p>
@@ -168,12 +166,13 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                 </label>
                                 <select
                                     {...register('status')}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    className="w-full px-3 py-2 rounded-lg focus:outline-none"
                                 >
-                                    <option value="planned">Планируется</option>
-                                    <option value="in_progress">В процессе</option>
-                                    <option value="completed">Завершено</option>
-                                    <option value="cancelled">Отменено</option>
+                                    {STATUS.map(status => (
+                                        <option key={status.id} value={status.value}>
+                                            {status.label}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

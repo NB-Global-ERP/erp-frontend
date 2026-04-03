@@ -51,3 +51,83 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+select,
+::picker(select) {
+  appearance: base-select;
+  cursor: pointer;
+}
+
+select {
+  border: 1px solid var(--color-gray-300);
+}
+
+select::picker-icon {
+  color: var(--color-gray-300);
+}
+
+::picker(select) {
+  border: 1px solid var(--color-gray-300);
+  border-radius: 8px;
+  background-color: white;
+}
+
+option {
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+option:first-of-type {
+  border-radius: 8px 8px 0 0;
+}
+
+option:last-of-type {
+  border-radius: 0 0 8px 8px;
+}
+
+option:only-of-type {
+  border-radius: 8px;
+}
+
+option:hover,
+option:focus {
+  background: var(--color-primary-500);
+  color: white;
+  cursor: pointer;
+}
+
+select:hover,
+select:focus {
+  border: 1px solid var(--color-primary-500);
+}
+
+option:checked {
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  font-weight: 500;
+}
+
+option:disabled {
+  color: var(--color-gray-400);
+  background-color: var(--color-gray-50);
+  cursor: not-allowed;
+}
+
+::picker(select)::-webkit-scrollbar {
+  width: 8px;
+}
+
+::picker(select)::-webkit-scrollbar-track {
+  background: var(--color-gray-100);
+  border-radius: 4px;
+}
+
+::picker(select)::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+  border-radius: 4px;
+}
+
+::picker(select)::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}

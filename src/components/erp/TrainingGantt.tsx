@@ -51,11 +51,11 @@ export function TrainingGantt() {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="bg-white rounded-lg shadow-sm p-4 max-w-full">
             <div className="flex justify-between items-center mb-4">
                 <div>
                     <h2 className="text-lg font-semibold text-gray-800">
-                        Диаграмма Ганта - План обучения
+                         План обучения
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
                         Отображение {groups.length} учебных групп на временной шкале
@@ -71,7 +71,7 @@ export function TrainingGantt() {
                 </div>
             </div>
 
-            <div style={{ height: '500px' }}>
+            <div className="h-[500px] max-w-full">
                 <Locale words={{ ...ru, ...ru }}>
                     <ContextMenu api={api}>
                         <Gantt
