@@ -1,18 +1,26 @@
 import { useState, useMemo } from 'react';
-import { Gantt } from '@svar-ui/react-gantt';
+import { Gantt, ContextMenu} from '@svar-ui/react-gantt';
 import { Locale } from '@svar-ui/react-core';
 import { useERPStore } from '@/stores/erpStore';
 import { useCourses } from '@/hooks/useCourses';
 import ru from '@/utils/ru';
+import {formatDayMonthRu, formatMonthYearRu} from "@/utils/formatters.ts";
 
 const scales = [
-    { unit: 'week', step: 1, format: '%d %M' },
-    { unit: 'month', step: 1, format: '%M %Y' },
-    { unit: 'quarter', step: 1, format: '%Q-й %Y' },
+    { unit: 'week', step: 1, format: formatDayMonthRu, label: "неделя"},
+    { unit: 'month', step: 1, format: formatMonthYearRu, label: "месяц"},
+    { unit: 'quarter', step: 1, format: '%Q-й %Y', label: "квартал"},
 ];
+
+const columns = [
+    { id: 'text', header: 'Название', width: 150 },
+    { id: 'start', header: 'Начало', width: 100 },
+    { id: 'duration', header: 'Длительность', width: 150 },
+]
 
 export function TrainingGantt() {
     const [scaleIndex, setScaleIndex] = useState(0);
+    const [api, setApi] = useState(null);
     const groups = useERPStore((state) => state.getGroupsWithCalculations());
     const updateGroup = useERPStore((state) => state.updateGroup);
     const courses = useCourses();
@@ -58,21 +66,26 @@ export function TrainingGantt() {
                         onClick={handleScaleChange}
                         className="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200 transition-colors"
                     >
-                        Масштаб: {scales[scaleIndex].unit}
+                        Масштаб: {scales[scaleIndex].label}
                     </button>
                 </div>
             </div>
 
             <div style={{ height: '500px' }}>
                 <Locale words={{ ...ru, ...ru }}>
-                    <Gantt
-                        tasks={ganttTasks}
-                        scales={[scales[scaleIndex]]}
-                        onTaskUpdate={handleTaskUpdate}
-                        onTaskClick={(task) => {
-                            console.log('Группа выбрана:', task);
-                        }}
-                    />
+                    <ContextMenu api={api}>
+                        <Gantt
+                            tasks={ganttTasks}
+                            zoom={true}
+                            init={setApi}
+                            columns={columns}
+                            scales={[scales[scaleIndex]]}
+                            onTaskUpdate={handleTaskUpdate}
+                            onTaskClick={(task) => {
+                                console.log('Группа выбрана:', task);
+                            }}
+                        />
+                    </ContextMenu>
                 </Locale>
             </div>
 

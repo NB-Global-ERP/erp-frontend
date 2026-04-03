@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Grid } from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { SpecificationForm } from './SpecificationForm';
 import { formatCurrency } from '@/services/calculations';
 import { Plus } from 'lucide-react';
+import ru from "@/utils/ru.ts";
+import {Locale} from "@svar-ui/react-core";
 
 export function Specifications() {
     const [showForm, setShowForm] = useState(false);
     const [selectedSpecId, setSelectedSpecId] = useState<string | null>(null);
+    const [api, setApi] = useState(null);
 
     const specifications = useERPStore((state) => state.specifications);
     const companies = useERPStore((state) => state.companies);
@@ -51,14 +54,21 @@ export function Specifications() {
                 </button>
             </div>
 
-            <Grid
-                data={specsWithData}
-                columns={columns}
-                onRowDoubleClick={(row) => {
-                    setSelectedSpecId(row.id);
-                    setShowForm(true);
-                }}
-            />
+            <Locale words={{ ...ru, ...ru }}>
+                <ContextMenu api={api}>
+                    <HeaderMenu api={api}>
+                        <Grid
+                            init={setApi}
+                            data={specsWithData}
+                            columns={columns}
+                            onRowDoubleClick={(row) => {
+                                setSelectedSpecId(row.id);
+                                setShowForm(true);
+                            }}
+                        />
+                    </HeaderMenu>
+                </ContextMenu>
+            </Locale>
 
             {showForm && (
                 <SpecificationForm

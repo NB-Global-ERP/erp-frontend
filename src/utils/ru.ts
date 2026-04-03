@@ -1,7 +1,5 @@
-// src/utils/ru.ts
 export default {
     gantt: {
-        // Header / sidebar
         "Task name": "Название",
         "Start date": "Начало",
         "Add task": "Добавить задачу",
@@ -10,7 +8,6 @@ export default {
         Milestone: "Веха",
         "Summary task": "Сводная задача",
 
-        // Sidebar
         Save: "Сохранить",
         Delete: "Удалить",
         Name: "Название",
@@ -29,7 +26,6 @@ export default {
         "End-to-end": "Окончание-окончание",
         "Start-to-end": "Начало-окончание",
 
-        // Context menu / toolbar
         Add: "Добавить",
         "Child task": "Подзадача",
         "Task above": "Задачу выше",
@@ -47,15 +43,28 @@ export default {
         "Split task": "Разделить задачу",
         Segment: "Сегмент",
 
-        // Toolbar
         "New task": "Новая задача",
         "Move up": "Переместить вверх",
         "Move down": "Переместить вниз",
         Undo: "Отменить",
         Redo: "Повторить",
 
-        // Formats
         Week: "Неделя",
         Q: "Квартал",
+
+        Apr: "Апрель"
+    },
+    grid: {
+        "Add before": "Добавить до",
+        "Add after": "Добавить после",
+        Cut: "Вырезать",
+        Copy: "Копировать",
+        Paste: "Вставить",
+        Delete: "Удалить",
+        "New row": "Новая строка",
+        "Move up": "Переместить вверх",
+        "Move down": "Переместить вниз",
+        Undo: "Отменить",
+        Redo: "Повторить",
     },
 };

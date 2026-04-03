@@ -18,13 +18,6 @@ export const REQUEST_STATUS = {
 
 export type RequestStatus = typeof REQUEST_STATUS[keyof typeof REQUEST_STATUS];
 
-export const BUDGET_TYPES = {
-    TRAINING: { value: 'training', label: 'Обучение', icon: '🎓' },
-    MATERIALS: { value: 'materials', label: 'Материалы', icon: '📚' },
-    CERTIFICATION: { value: 'certification', label: 'Сертификация', icon: '📜' },
-    EQUIPMENT: { value: 'equipment', label: 'Оборудование', icon: '💻' },
-} as const;
-
 export const DEPARTMENTS = [
     { id: 'it', name: 'IT', budget: 1000000, head: 'Иванов И.И.' },
     { id: 'hr', name: 'HR', budget: 500000, head: 'Петрова Е.В.' },

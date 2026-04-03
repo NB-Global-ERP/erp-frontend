@@ -47,15 +47,11 @@
 
     --wx-gantt-border-color: var(--color-gray-100);
     --wx-gantt-border: 1px solid var(--color-gray-200);
-    --wx-gantt-form-header-border: none;
     --wx-gantt-icon-color: var(--color-gray-400);
 
     --wx-gantt-bar-font: 400 13px var(--wx-font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
     --wx-gantt-marker-font: 500 12px var(--wx-font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
     --wx-tooltip-font: 400 12px var(--wx-font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
-
-    --wx-gantt-bar-border-radius: 4px;
-    --wx-gantt-milestone-border-radius: 50%;
 
     --wx-gantt-critical-color: var(--color-danger);
 

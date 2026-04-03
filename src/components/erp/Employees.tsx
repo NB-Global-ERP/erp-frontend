@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Grid } from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { EmployeeForm } from './EmployeeForm';
 import { Plus } from 'lucide-react';
+import ru from "@/utils/ru.ts";
+import {Locale} from "@svar-ui/react-core";
 
 export function Employees() {
     const [showForm, setShowForm] = useState(false);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+    const [api, setApi] = useState(null);
 
     const employees = useERPStore((state) => state.employees);
     const companies = useERPStore((state) => state.companies);
@@ -38,14 +41,21 @@ export function Employees() {
                 </button>
             </div>
 
-            <Grid
-                data={employeesWithCompany}
-                columns={columns}
-                onRowDoubleClick={(row) => {
-                    setSelectedEmployeeId(row.id);
-                    setShowForm(true);
-                }}
-            />
+            <Locale words={{ ...ru, ...ru }}>
+                <ContextMenu api={api}>
+                    <HeaderMenu api={api}>
+                        <Grid
+                            init={setApi}
+                            data={employeesWithCompany}
+                            columns={columns}
+                            onRowDoubleClick={(row) => {
+                                setSelectedEmployeeId(row.id);
+                                setShowForm(true);
+                            }}
+                        />
+                    </HeaderMenu>
+                </ContextMenu>
+            </Locale>
 
             {showForm && (
                 <EmployeeForm

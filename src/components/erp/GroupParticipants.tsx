@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Grid } from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { Plus, Trash2 } from 'lucide-react';
+import ru from "@/utils/ru.ts";
+import {Locale} from "@svar-ui/react-core";
 
 interface GroupParticipantsProps {
     groupId: string;
@@ -9,6 +11,7 @@ interface GroupParticipantsProps {
 
 export function GroupParticipants({ groupId }: GroupParticipantsProps) {
     const [showAddModal, setShowAddModal] = useState(false);
+    const [api, setApi] = useState(null);
 
     const participants = useERPStore((state) =>
         state.participants.filter(p => p.groupId === groupId)
@@ -66,12 +69,19 @@ export function GroupParticipants({ groupId }: GroupParticipantsProps) {
                 </button>
             </div>
 
-            <Grid
-                data={participantsWithNames}
-                columns={columns}
-                onCellEdit={handleCellEdit}
-                style={{ height: 300 }}
-            />
+            <Locale words={{ ...ru, ...ru }}>
+                <ContextMenu api={api}>
+                    <HeaderMenu api={api}>
+                        <Grid
+                            init={setApi}
+                            data={participantsWithNames}
+                            columns={columns}
+                            onCellEdit={handleCellEdit}
+                            style={{ height: 300 }}
+                        />
+                    </HeaderMenu>
+                </ContextMenu>
+            </Locale>
 
             {showAddModal && (
                 <AddParticipantModal

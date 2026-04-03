@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Grid, Toolbar } from '@svar-ui/react-grid';
+import {Grid, Toolbar, ContextMenu, HeaderMenu} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { TrainingGroupForm } from './TrainingGroupForm';
 import { Plus } from 'lucide-react';
 import {formatCurrency} from "@/utils/formatters.ts";
+import ru from "@/utils/ru.ts";
+import { Locale } from '@svar-ui/react-core';
 
 export function TrainingGroups() {
     const [showForm, setShowForm] = useState(false);
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [api, setApi] = useState(null);
 
     const groups = useERPStore((state) => state.getGroupsWithCalculations());
 
@@ -62,16 +65,22 @@ export function TrainingGroups() {
                     Создать группу
                 </button>
             </div>
-
-            <Grid
-                data={groups}
-                columns={columns}
-                toolbar={<Toolbar items={toolbarItems} />}
-                onRowDoubleClick={(row) => {
-                    setSelectedGroupId(row.id);
-                    setShowForm(true);
-                }}
-            />
+            <Locale words={{ ...ru, ...ru }}>
+                <ContextMenu api={api}>
+                    <HeaderMenu api={api}>
+                        <Grid
+                            init={setApi}
+                            data={groups}
+                            columns={columns}
+                            toolbar={<Toolbar items={toolbarItems} />}
+                            onRowDoubleClick={(row) => {
+                                setSelectedGroupId(row.id);
+                                setShowForm(true);
+                            }}
+                        />
+                    </HeaderMenu>
+                </ContextMenu>
+            </Locale>
 
             {showForm && (
                 <TrainingGroupForm
