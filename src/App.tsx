@@ -65,14 +65,7 @@ function App() {
                     ))}
                 </div>
 
-                <div
-                    className={`
-                        transition-all duration-200 ease-out
-                        ${isChanging ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}
-                    `}
-                >
-                    <ActiveComponent />
-                </div>
+                <ActiveComponent />
             </div>
         </MainLayout>
     );
