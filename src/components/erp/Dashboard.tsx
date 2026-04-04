@@ -22,10 +22,10 @@ export function Dashboard() {
     const averageProgress = averageGroupProgress;
 
     const stats = [
-        { label: 'Группы', value: totalGroups, icon: Users, color: 'bg-blue-100 text-blue-600' },
-        { label: 'Курсы', value: totalCourses, icon: BookOpen, color: 'bg-green-100 text-green-600' },
-        { label: 'Сотрудники', value: totalEmployees, icon: Users, color: 'bg-purple-100 text-purple-600' },
-        { label: 'Спецификации', value: totalSpecifications, icon: FileText, color: 'bg-orange-100 text-orange-600' },
+        { label: 'Группы', value: totalGroups, icon: Users, color: 'bg-primary-50 text-primary-600' },
+        { label: 'Курсы', value: totalCourses, icon: BookOpen, color: 'bg-primary-50 text-primary-600' },
+        { label: 'Сотрудники', value: totalEmployees, icon: Users, color: 'bg-primary-50 text-primary-600' },
+        { label: 'Спецификации', value: totalSpecifications, icon: FileText, color: 'bg-primary-50 text-primary-600' },
     ];
 
     if (isLoading) {

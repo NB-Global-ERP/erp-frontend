@@ -8,7 +8,7 @@ const employeeSchema = z.object({
     firstName: z.string().min(1, 'Введите имя'),
     middleName: z.string().min(1, 'Введите отчество'),
     lastName: z.string().min(1, 'Введите фамилию'),
-    companyId: z.number('Выберите компанию'),
+    companyId: z.number().min(1, 'Выберите компанию'),
     email: z.string().email('Введите email'),
 });
 

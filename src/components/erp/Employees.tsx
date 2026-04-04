@@ -5,7 +5,6 @@ import { Plus } from 'lucide-react';
 import ru from "@/utils/ru.ts";
 import {Locale} from "@svar-ui/react-core";
 import {useEmployees} from "@/hooks/useEmployees.ts";
-import {useCompanies} from "@/hooks/useCompanies.ts";
 
 export function Employees() {
     const [showForm, setShowForm] = useState(false);
@@ -13,19 +12,24 @@ export function Employees() {
     const [api, setApi] = useState<IApi>();
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
-    const employees = useEmployees()
-    const companies = useCompanies();
-
-    const employeesWithCompany = employees.map(emp => ({
-        ...emp,
-        companyName: companies.find(c => c.id === emp.companyId)?.name || '',
-    }));
+    const {employees, isLoading } = useEmployees();
 
     const columns = [
         { id: 'fullName', header: 'ФИО', width: 250 },
         { id: 'email', header: 'Email', width: 250 },
         { id: 'companyName', header: 'Компания', width: 200 },
     ];
+
+    if (isLoading && employees.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Загрузка участников...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
@@ -48,7 +52,7 @@ export function Employees() {
                     <HeaderMenu api={api}>
                         <Grid
                             init={setApi}
-                            data={employeesWithCompany}
+                            data={employees}
                             columns={columns}
                             filterValues={filterValues}
                             onFilterChange={setFilterValues}

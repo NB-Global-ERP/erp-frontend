@@ -7,6 +7,8 @@ import { Specifications } from '@/components/erp/Specifications';
 import { Courses } from '@/components/erp/Courses';
 import { Employees } from '@/components/erp/Employees';
 import { Companies } from "@/components/erp/Companies.tsx";
+import {useDataSync} from "@/hooks/useDataSync.ts";
+import {TIME} from "@/utils/constants.ts";
 
 const tabs = [
     { id: 'dashboard', label: 'Дашборд', component: Dashboard },
@@ -19,6 +21,7 @@ const tabs = [
 ];
 
 function App() {
+    useDataSync(TIME.MINUTE)
     const activeTab = useUIStore((state) => state.activeTab);
     const setActiveTab = useUIStore((state) => state.setActiveTab);
 

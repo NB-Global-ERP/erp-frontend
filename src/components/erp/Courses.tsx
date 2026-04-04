@@ -13,7 +13,7 @@ export function Courses() {
     const [api, setApi] = useState<IApi>();
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
-    const courses = useCourses();
+    const {courses, isLoading} = useCourses();
 
     const columns = [
         { id: 'name', header: 'Название курса', width: 250 },
@@ -26,6 +26,17 @@ export function Courses() {
             template: (value: number) => formatCurrency(value)
         },
     ];
+
+    if (isLoading && courses.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Загрузка курсов...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">

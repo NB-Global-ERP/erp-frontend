@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {ContextMenu, Grid, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { SpecificationForm } from './SpecificationForm';
@@ -6,6 +6,7 @@ import { formatCurrency } from '@/utils/formatters.ts';
 import { Plus } from 'lucide-react';
 import ru from "@/utils/ru.ts";
 import { Locale } from "@svar-ui/react-core";
+import {useSpecifications} from "@/hooks/useSpecifications.ts";
 
 export function Specifications() {
     const [showForm, setShowForm] = useState(false);
@@ -13,34 +14,7 @@ export function Specifications() {
     const [api, setApi] = useState<IApi>();
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
-    const specifications = useERPStore((state) => state.specifications);
-    const companies = useERPStore((state) => state.companies);
-    const groups = useERPStore((state) => state.groups);
-
-    const specsWithData = useMemo(() => {
-        return specifications.map(spec => {
-            const linkedGroups = groups.filter(g => g.specificationId === spec.id);
-
-            const totalAmount = linkedGroups.reduce((sum, g) => sum + (g.totalCost || 0), 0);
-            const vatAmount = totalAmount * 0.22;
-            const totalWithVat = totalAmount + vatAmount;
-
-            const company = companies.find(c => c.id === spec.companyId);
-
-            return {
-                id: spec.id,
-                number: spec.number,
-                date: spec.date.toLocaleDateString('ru-RU'),
-                companyName: company?.name || 'Неизвестная компания',
-                companyCode: company?.code || '',
-                groupsCount: linkedGroups.length,
-                participantsCount: linkedGroups.reduce((sum, g) => sum + (g.participantCount || 0), 0),
-                totalAmount,
-                vatAmount,
-                totalWithVat,
-            };
-        });
-    }, [specifications, companies, groups]);
+    const { specifications, isLoading } = useSpecifications();
 
     const columns = [
         {
@@ -92,6 +66,17 @@ export function Specifications() {
         setShowForm(true);
     };
 
+    if (isLoading && specifications.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Загрузка спецификаций...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -113,7 +98,7 @@ export function Specifications() {
                     <HeaderMenu api={api}>
                         <Grid
                             init={setApi}
-                            data={specsWithData}
+                            data={specifications}
                             columns={columns}
                             filterValues={filterValues}
                             onFilterChange={setFilterValues}

@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {ContextMenu, Grid, HeaderMenu, type IApi, type IFilterValues } from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { CompanyForm } from './CompanyForm';
 import { Plus } from 'lucide-react';
 import ru from "@/utils/ru.ts";
 import { Locale } from "@svar-ui/react-core";
+import {useCompanies} from "@/hooks/useCompanies.ts";
 
 export function Companies() {
     const [showForm, setShowForm] = useState(false);
@@ -12,19 +13,7 @@ export function Companies() {
     const [api, setApi] = useState<IApi>();
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
-    const companies = useERPStore((state) => state.companies);
-    const employees = useERPStore((state) => state.employees);
-    const specifications = useERPStore((state) => state.specifications);
-
-    const companiesWithStats = useMemo(() => {
-        return companies.map(company => ({
-            id: company.id,
-            code: company.code,
-            name: company.name,
-            employeesCount: employees.filter(e => e.companyId === company.id).length,
-            specificationsCount: specifications.filter(s => s.companyId === company.id).length,
-        }));
-    }, [companies, employees, specifications]);
+    const {companies, isLoading} = useCompanies();
 
     const columns = [
         {
@@ -58,6 +47,17 @@ export function Companies() {
         setShowForm(true);
     };
 
+    if (isLoading && companies.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Загрузка компаний...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -79,7 +79,7 @@ export function Companies() {
                     <HeaderMenu api={api}>
                         <Grid
                             init={setApi}
-                            data={companiesWithStats}
+                            data={companies}
                             columns={columns}
                             filterValues={filterValues}
                             onFilterChange={setFilterValues}
