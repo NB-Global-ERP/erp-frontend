@@ -1,4 +1,4 @@
-import { Users, BookOpen, FileText, TrendingUp } from 'lucide-react';
+import { Users, BookOpen, FileText, TrendingUp, Building2 } from 'lucide-react';
 import { formatCurrency } from '@/utils/formatters.ts';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import {useERPStore} from "@/stores/erpStore.ts";
@@ -17,7 +17,7 @@ export function Dashboard() {
         { label: 'Курсы', value: totalCourses, icon: BookOpen, color: 'bg-primary-50 text-primary-600' },
         { label: 'Сотрудники', value: totalEmployees, icon: Users, color: 'bg-primary-50 text-primary-600' },
         { label: 'Спецификации', value: totalSpecifications, icon: FileText, color: 'bg-primary-50 text-primary-600' },
-        { label: 'Компании', value: totalCompanies, icon: FileText, color: 'bg-primary-50 text-primary-600' },
+        { label: 'Компании', value: totalCompanies, icon: Building2, color: 'bg-primary-50 text-primary-600' },
     ];
 
     if (isLoading) {
@@ -51,7 +51,7 @@ export function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {stats.map((stat) => (
                     <div
                         key={stat.label}
@@ -125,26 +125,27 @@ export function Dashboard() {
 
                 <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col justify-between">
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-800">
-                            Общая эффективность
-                        </h2>
-
-                        <div className="space-y-4">
+                        <div className="flex justify-between items-start mb-4">
                             <div>
-                                <p className="text-xs text-gray-500">
+                                <h2 className="text-xl font-semibold text-gray-800">
+                                    Общая эффективность
+                                </h2>
+                                <p className="text-xs text-gray-500 mt-1">
                                     Средний прогресс по всем группам
                                 </p>
-                                <p className="text-3xl font-semibold text-gray-900 mt-1">
+                            </div>
+                            <div className="text-right">
+                                <p className="text-3xl font-semibold text-gray-900">
                                     {averageProgress}%
                                 </p>
                             </div>
+                        </div>
 
-                            <div className="w-full bg-gray-100 rounded-full h-2">
-                                <div
-                                    className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                                    style={{ width: `${averageProgress}%` }}
-                                />
-                            </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                            <div
+                                className="bg-primary-500 h-2 rounded-full transition-all duration-500"
+                                style={{width: `${averageProgress}%`}}
+                            />
                         </div>
 
                         <div className="mt-6 pt-4 border-t border-gray-100">
