@@ -5,17 +5,16 @@ import { useERPStore } from '@/stores/erpStore';
 import { X } from 'lucide-react';
 
 const courseSchema = z.object({
-    code: z.string().min(1, 'Введите код'),
     name: z.string().min(1, 'Введите название'),
-    description: z.string().optional(),
-    durationDays: z.number().min(1, 'Длительность должна быть больше 0'),
+    description: z.string().min(1, 'Введите описание'),
+    durationInDays: z.number().min(1, 'Длительность должна быть больше 0'),
     pricePerPerson: z.number().min(0, 'Цена не может быть отрицательной'),
 });
 
 type CourseFormData = z.infer<typeof courseSchema>;
 
 interface CourseFormProps {
-    courseId?: string | null;
+    courseId?: number | null;
     onClose: () => void;
     onSave: () => void;
 }
@@ -27,32 +26,29 @@ export function CourseForm({ courseId, onClose, onSave }: CourseFormProps) {
 
     const existingCourse = courseId ? courses.find(c => c.id === courseId) : null;
 
-    const { register, handleSubmit, formState: { errors } } = useForm<CourseFormData>({
-        resolver: zodResolver(courseSchema),
-        defaultValues: existingCourse ? {
-            code: existingCourse.code,
-            name: existingCourse.name,
-            description: existingCourse.description || '',
-            durationDays: existingCourse.durationDays,
-            pricePerPerson: existingCourse.pricePerPerson,
-        } : {
-            code: '',
-            name: '',
-            description: '',
-            durationDays: 1,
-            pricePerPerson: 0,
-        },
-    });
+    const { register, handleSubmit, formState: { errors } } =
+        useForm<CourseFormData>({
+            resolver: zodResolver(courseSchema),
+            defaultValues: existingCourse
+                ? {
+                    name: existingCourse.name,
+                    description: existingCourse.description,
+                    durationInDays: existingCourse.durationDays,
+                    pricePerPerson: existingCourse.price,
+                }
+                : {
+                    name: '',
+                    description: '',
+                    durationInDays: 1,
+                    pricePerPerson: 0,
+                },
+        });
 
-    const onSubmit = (data: CourseFormData) => {
+    const onSubmit = async (data: CourseFormData) => {
         if (courseId) {
-            updateCourse(courseId, data);
+            await updateCourse(courseId, data);
         } else {
-            addCourse({
-                id: Date.now().toString(),
-                ...data,
-                description: data.description || '',
-            });
+            await addCourse(data);
         }
         onSave();
     };
@@ -70,16 +66,6 @@ export function CourseForm({ courseId, onClose, onSave }: CourseFormProps) {
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Код курса *
-                        </label>
-                        <input
-                            {...register('code')}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        />
-                        {errors.code && <p className="mt-1 text-sm text-red-600">{errors.code.message}</p>}
-                    </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -110,10 +96,10 @@ export function CourseForm({ courseId, onClose, onSave }: CourseFormProps) {
                             </label>
                             <input
                                 type="number"
-                                {...register('durationDays', { valueAsNumber: true })}
+                                {...register('durationInDays', { valueAsNumber: true })}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
-                            {errors.durationDays && <p className="mt-1 text-sm text-red-600">{errors.durationDays.message}</p>}
+                            {errors.durationInDays && <p className="mt-1 text-sm text-red-600">{errors.durationInDays.message}</p>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">

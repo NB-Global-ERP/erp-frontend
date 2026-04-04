@@ -8,11 +8,11 @@ import { X } from 'lucide-react';
 import {STATUS_OPTIONS} from "@/utils/constants.ts";
 
 const groupSchema = z.object({
-    courseId: z.string().min(1, 'Выберите курс'),
-    name: z.string().min(1, 'Введите название'),
-    startDate: z.string().min(1, 'Укажите дату начала'),
-    endDate: z.string().min(1, 'Укажите дату окончания'),
-    status: z.enum(['planned', 'in_progress', 'completed', 'cancelled']),
+    dateBegin: z.string('Укажите дату начала'),
+    dateEnd: z.string('Укажите дату окончания'),
+    pricePerPerson: z.number().min(0),
+    courseCompletionId: z.number(),
+    specificationId: z.number('Укажите спецификацию'),
 });
 
 type GroupFormData = z.infer<typeof groupSchema>;

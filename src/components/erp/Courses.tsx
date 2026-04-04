@@ -1,23 +1,29 @@
 import { useState } from 'react';
-import { Grid } from '@svar-ui/react-grid';
-import { useERPStore } from '@/stores/erpStore';
+import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
 import { CourseForm } from './CourseForm';
 import { Plus } from 'lucide-react';
 import {formatCurrency} from "@/utils/formatters.ts";
+import ru from "@/utils/ru.ts";
+import {Locale} from "@svar-ui/react-core";
+import {useCourses} from "@/hooks/useCourses.ts";
 
 export function Courses() {
     const [showForm, setShowForm] = useState(false);
-    const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+    const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+    const [api, setApi] = useState(null);
 
-    const courses = useERPStore((state) => state.courses);
+    const courses = useCourses();
 
     const columns = [
-        { id: 'code', header: 'Код', width: 100 },
         { id: 'name', header: 'Название курса', width: 250 },
         { id: 'description', header: 'Описание', width: 300 },
         { id: 'durationDays', header: 'Длительность, дни', width: 120 },
-        { id: 'pricePerPerson', header: 'Цена за чел., ₽', width: 150,
-            format: (value: number) => formatCurrency(value) },
+        {
+            id: 'price',
+            header: 'Цена за чел.',
+            width: 150,
+            template: (value: number) => formatCurrency(value)
+        },
     ];
 
     return (
@@ -36,14 +42,21 @@ export function Courses() {
                 </button>
             </div>
 
-            <Grid
-                data={courses}
-                columns={columns}
-                onRowDoubleClick={(row) => {
-                    setSelectedCourseId(row.id);
-                    setShowForm(true);
-                }}
-            />
+            <Locale words={{ ...ru, ...ru }}>
+                <ContextMenu api={api}>
+                    <HeaderMenu api={api}>
+                        <Grid
+                            init={setApi}
+                            data={courses}
+                            columns={columns}
+                            onRowDoubleClick={(row) => {
+                                setSelectedCourseId(row.id);
+                                setShowForm(true);
+                            }}
+                        />
+                    </HeaderMenu>
+                </ContextMenu>
+            </Locale>
 
             {showForm && (
                 <CourseForm

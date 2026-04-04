@@ -5,50 +5,34 @@ import { useERPStore } from '@/stores/erpStore';
 import { X } from 'lucide-react';
 
 const employeeSchema = z.object({
-    fullName: z.string().min(1, 'Введите ФИО'),
-    email: z.string().email('Введите корректный email'),
-    companyId: z.string().min(1, 'Выберите компанию'),
+    firstName: z.string().min(1, 'Введите имя'),
+    middleName: z.string().min(1, 'Введите отчество'),
+    lastName: z.string().min(1, 'Введите фамилию'),
+    companyId: z.number('Выберите компанию'),
+    email: z.string().email('Введите email'),
 });
 
 type EmployeeFormData = z.infer<typeof employeeSchema>;
 
 interface EmployeeFormProps {
-    employeeId?: string | null;
+    employeeId?: number | null;
     onClose: () => void;
     onSave: () => void;
 }
 
 export function EmployeeForm({ employeeId, onClose, onSave }: EmployeeFormProps) {
-    const employees = useERPStore((state) => state.employees);
-    const companies = useERPStore((state) => state.companies);
-    const addEmployee = useERPStore((state) => state.addEmployee);
-    const updateEmployee = useERPStore((state) => state.updateEmployee);
+    const { employees, companies, addEmployee, updateEmployee } = useERPStore();
 
-    const existingEmployee = employeeId ? employees.find(e => e.id === employeeId) : null;
+    const existingEmployee= employeeId ? employees.find(e => e.id === employeeId) : null;
 
     const { register, handleSubmit, formState: { errors } } = useForm<EmployeeFormData>({
         resolver: zodResolver(employeeSchema),
-        defaultValues: existingEmployee ? {
-            fullName: existingEmployee.fullName,
-            email: existingEmployee.email,
-            companyId: existingEmployee.companyId,
-        } : {
-            fullName: '',
-            email: '',
-            companyId: '',
-        },
+        defaultValues: existingEmployee || {},
     });
 
-    const onSubmit = (data: EmployeeFormData) => {
-        if (employeeId) {
-            updateEmployee(employeeId, data);
-        } else {
-            addEmployee({
-                id: Date.now().toString(),
-                ...data,
-                groupIds: [],
-            });
-        }
+    const onSubmit = async (data: EmployeeFormData) => {
+        if (employeeId) await updateEmployee(employeeId, data);
+        else await addEmployee(data);
         onSave();
     };
 
@@ -67,14 +51,38 @@ export function EmployeeForm({ employeeId, onClose, onSave }: EmployeeFormProps)
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            ФИО *
+                            Фамилия *
                         </label>
                         <input
-                            {...register('fullName')}
+                            {...register('lastName')}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            placeholder="Иванов Иван Иванович"
+                            placeholder="Иванов"
                         />
-                        {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>}
+                        {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Имя *
+                        </label>
+                        <input
+                            {...register('firstName')}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            placeholder="Иван"
+                        />
+                        {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Отчество *
+                        </label>
+                        <input
+                            {...register('middleName')}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            placeholder="Иванович"
+                        />
+                        {errors.middleName && <p className="mt-1 text-sm text-red-600">{errors.middleName.message}</p>}
                     </div>
 
                     <div>

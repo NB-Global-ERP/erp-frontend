@@ -2,6 +2,65 @@ export interface CreateResponse {
     id: number;
 }
 
+export interface StudentResponse {
+    id: number;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    companyId: number;
+    email: string;
+}
+
+export interface GroupResponse {
+    id: number;
+    courseId: number;
+    dateBegin: string;
+    dateEnd: string;
+    pricePerPerson: number;
+    participantCount: number;
+    groupPrice: number;
+    courseCompletion: string;
+    averageProgress: number;
+    specificationId: number;
+}
+
+export interface CompanyResponse {
+    id: number;
+    companyCode: string;
+    companyName: string;
+}
+
+export interface CourseResponse {
+    id: number;
+    name: string;
+    description: string;
+    durationInDays: number;
+    pricePerPerson: number;
+}
+
+export interface GroupResponse {
+    id: number;
+    courseId: number;
+    dateBegin: string;
+    dateEnd: string;
+    pricePerPerson: number;
+    participantCount: number;
+    groupPrice: number;
+    courseCompletion: string;
+    averageProgress: number;
+    specificationId: number;
+}
+
+export interface SpecificationResponse {
+    id: number;
+    date: string;
+    number: number;
+    companyId: number;
+    totalAmountExcludingVat: number;
+    vatAmount22Percent: number;
+    totalAmountIncludingVat: number;
+}
+
 export interface CourseRequest {
     name: string;
     description: string;
