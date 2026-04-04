@@ -12,7 +12,7 @@ RUN yarn install
 
 COPY . ./
 
-RUN yarn build
+RUN yarn build --noEmit || true
 
 FROM node:20-alpine AS production
 

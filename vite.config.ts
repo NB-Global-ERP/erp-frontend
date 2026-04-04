@@ -5,11 +5,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        plugins: [['babel-plugin-react-compiler', { compilationMode: 'annotation' }]],
-      },
-    }),
+    react(),
     tailwindcss(),
   ],
   resolve: {
@@ -19,6 +15,9 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  define: {
+    "process.env.VITE_API_BASE_URL": JSON.stringify("http://erp_service:8091/api/v1"),
   },
   optimizeDeps: {
     include: ['@svar-ui/react-grid', '@svar-ui/react-gantt'],
