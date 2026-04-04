@@ -8,12 +8,11 @@ COPY package.json yarn.lock ./
 
 RUN yarn config set nodeLinker node-modules
 
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 COPY . ./
 
 RUN yarn build
-
 
 FROM node:20-alpine AS production
 
