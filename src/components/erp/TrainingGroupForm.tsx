@@ -5,10 +5,11 @@ import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
 import { GroupParticipants } from './GroupParticipants';
 import { X } from 'lucide-react';
-import {STATUS} from "@/utils/constants.ts";
+import {STATUS_OPTIONS} from "@/utils/constants.ts";
 
 const groupSchema = z.object({
     courseId: z.string().min(1, 'Выберите курс'),
+    name: z.string().min(1, 'Введите название'),
     startDate: z.string().min(1, 'Укажите дату начала'),
     endDate: z.string().min(1, 'Укажите дату окончания'),
     status: z.enum(['planned', 'in_progress', 'completed', 'cancelled']),
@@ -36,11 +37,13 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
         resolver: zodResolver(groupSchema),
         defaultValues: existingGroup ? {
             courseId: existingGroup.courseId,
+            name: existingGroup.name,
             startDate: existingGroup.startDate.toISOString().split('T')[0],
             endDate: existingGroup.endDate.toISOString().split('T')[0],
             status: existingGroup.status,
         } : {
             courseId: '',
+            name: '',
             startDate: new Date().toISOString().split('T')[0],
             endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             status: 'planned',
@@ -53,6 +56,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
         if (groupId) {
             updateGroup(groupId, {
                 courseId: data.courseId,
+                name: data.name,
                 startDate: new Date(data.startDate),
                 endDate: new Date(data.endDate),
                 status: data.status,
@@ -61,6 +65,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
         } else {
             addGroup({
                 id: Date.now().toString(),
+                name: data.name,
                 courseId: data.courseId,
                 startDate: new Date(data.startDate),
                 endDate: new Date(data.endDate),
@@ -113,6 +118,16 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Название группы *
+                                </label>
+                                <input
+                                    {...register('name')}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                />
+                                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Курс обучения *
                                 </label>
                                 <select
@@ -121,7 +136,8 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                 >
                                     <option value="">Выберите курс</option>
                                     {courses.map(course => (
-                                        <option className="py-1 text-gray-900 bg-white hover:bg-primary-50" key={course.id} value={course.id}>
+                                        <option className="py-1 text-gray-900 bg-white hover:bg-primary-50"
+                                                key={course.id} value={course.id}>
                                             {course.name} ({course.pricePerPerson.toLocaleString('ru-RU')} ₽/чел)
                                         </option>
                                     ))}
@@ -168,8 +184,8 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                     {...register('status')}
                                     className="w-full px-3 py-2 rounded-lg focus:outline-none"
                                 >
-                                    {STATUS.map(status => (
-                                        <option key={status.id} value={status.value}>
+                                    {STATUS_OPTIONS.map(status => (
+                                        <option key={status.id} value={status.id}>
                                             {status.label}
                                         </option>
                                     ))}
@@ -195,7 +211,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                     )}
 
                     {activeTab === 'participants' && groupId && (
-                        <GroupParticipants groupId={groupId} />
+                        <GroupParticipants groupId={groupId}/>
                     )}
 
                     {activeTab === 'participants' && !groupId && (

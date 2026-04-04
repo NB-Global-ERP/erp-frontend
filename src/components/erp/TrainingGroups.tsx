@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useMemo, useState} from 'react';
 import {Grid, Toolbar, ContextMenu, HeaderMenu} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { TrainingGroupForm } from './TrainingGroupForm';
@@ -6,28 +6,72 @@ import { Plus } from 'lucide-react';
 import {formatCurrency} from "@/utils/formatters.ts";
 import ru from "@/utils/ru.ts";
 import { Locale } from '@svar-ui/react-core';
-import {STATUS} from "@/utils/constants.ts";
+import {STATUS_MAPPER, STATUS_OPTIONS_FOR_GRID} from "@/utils/constants.ts";
+import {useCourses} from "@/hooks/useCourses.ts";
 
 export function TrainingGroups() {
     const [showForm, setShowForm] = useState(false);
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
     const [api, setApi] = useState(null);
 
-    const groups = useERPStore((state) => state.getGroupsWithCalculations());
+    const groups = useERPStore((state) => state.groups);
+    const participants = useERPStore((state) => state.participants);
+    const courses = useCourses();
+
+    const groupsWithCalculations = useMemo(() => {
+        if (!groups || !participants) return [];
+
+        return groups.map(group => ({
+            ...group,
+            participantCount: participants.filter(p => p.groupId === group.id).length,
+            totalCost: participants.filter(p => p.groupId === group.id).length * group.pricePerPerson,
+            averageProgress: 0, // Рассчитайте по необходимости
+        }));
+    }, [groups, participants]);
+
+    const courseOptions = useMemo(() => {
+        if (!courses || !Array.isArray(courses)) return [];
+        return courses.map(course => ({
+            id: course.id,
+            label: course.name
+        }));
+    }, [courses]);
 
     const columns = [
-        { id: 'courseName', header: 'Курс', width: 200,
-            format: (value: any, row: any) => row.courseId },
+        { id: 'name', header: 'Название группы', width: 200, editor: 'text' },
+        { id: 'courseId', header: 'Курс', width: 160,
+            template: (value: string) => {
+                if (!value) return '—';
+                const course = courses?.find(c => c.id === value);
+                return course?.name || value;
+            }, editor: { type: 'richselect'}, options: courseOptions },
         { id: 'startDate', header: 'Дата начала', width: 120, editor: 'datepicker',
-            format: (value: Date) => value?.toLocaleDateString('ru-RU') },
+            template: (value: Date | string) => {
+                if (!value) return '—';
+                if (value instanceof Date) {
+                    return isNaN(value.getTime()) ? '—' : value.toLocaleDateString('ru-RU');
+                }
+                const date = new Date(value);
+                return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
+            }},
         { id: 'endDate', header: 'Дата окончания', width: 120, editor: 'datepicker',
-            format: (value: Date) => value?.toLocaleDateString('ru-RU') },
+            template: (value: Date | string) => {
+                if (!value) return '—';
+                if (value instanceof Date) {
+                    return isNaN(value.getTime()) ? '—' : value.toLocaleDateString('ru-RU');
+                }
+                const date = new Date(value);
+                return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
+            }},
         { id: 'participantCount', header: 'Участников', width: 100 },
-        { id: 'averageProgress', header: 'Прогресс, %', width: 100,
-            format: (value: number) => `${value}%` },
-        { id: 'totalCost', header: 'Стоимость, ₽', width: 150,
-            format: (value: number) => formatCurrency(value) },
-        { id: 'status', header: 'Статус', width: 120, editor: { type: 'combo', }, options: STATUS },
+        { id: 'averageProgress', header: 'Прогресс', width: 100,
+            template: (value: number) => `${value}%`,
+            editor: 'number' },
+        { id: 'totalCost', header: 'Стоимость', width: 150,
+            template: (value: number) => formatCurrency(value) },
+        { id: 'status', header: 'Статус', width: 120,
+            template: (value: string) => STATUS_MAPPER[value as keyof typeof STATUS_MAPPER] || value,
+            editor: { type: 'richselect'}, options: STATUS_OPTIONS_FOR_GRID},
     ];
 
     const toolbarItems = [
@@ -51,6 +95,7 @@ export function TrainingGroups() {
         },
     ];
 
+
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -71,7 +116,7 @@ export function TrainingGroups() {
                     <HeaderMenu api={api}>
                         <Grid
                             init={setApi}
-                            data={groups}
+                            data={groupsWithCalculations}
                             columns={columns}
                             toolbar={<Toolbar items={toolbarItems} />}
                             onRowDoubleClick={(row) => {

@@ -16,7 +16,7 @@ export function Sidebar() {
     if (!sidebarOpen) return null;
 
     return (
-        <aside className="fixed left-0 top-[63px] h-[calc(100vh-57px)] bg-white border-r border-gray-200 z-20">
+        <aside className="fixed left-0 top-[72px] h-[calc(100vh-57px)] bg-white border-r border-gray-200 z-20">
             <nav className="p-4 flex flex-col gap-5 ">
                 {menuItems.map((item) => (
                     <button

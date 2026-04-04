@@ -1,0 +1,75 @@
+export interface CreateResponse {
+    id: number;
+}
+
+export interface CourseRequest {
+    name: string;
+    description: string;
+    durationInDays: number;
+    pricePerPerson: number;
+}
+
+export interface CoursePatchRequest {
+    name?: string;
+    description?: string;
+    durationInDays?: number;
+    pricePerPerson?: number;
+}
+
+export interface StudentRequest {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    companyId: number;
+    email: string;
+}
+
+export interface StudentPatchRequest {
+    firstName?: string;
+    middleName?: string;
+    lastName?: string;
+    companyId?: number;
+    email?: string;
+}
+
+export interface GroupRequest {
+    courseId: number;
+    dateBegin: string;
+    dateEnd: string;
+    pricePerPerson: number;
+    courseCompletionId: number;
+    specificationId: number;
+}
+
+export interface GroupPatchRequest {
+    courseId?: number;
+    dateBegin?: string;
+    dateEnd?: string;
+    pricePerPerson?: number;
+    participantCount?: number;
+    groupPrice?: number;
+    courseCompletionId?: number;
+    averageProgress?: number;
+    specificationId?: number;
+}
+
+export interface SpecificationRequest {
+    datetime: string;
+    number: number;
+    companyId: number;
+    totalAmountExcludingVat: number;
+    vatAmount22Percent: number;
+    totalAmountIncludingVat: number;
+}
+
+export type SpecificationPatchRequest = Partial<SpecificationRequest>
+
+export interface CompanyRequest {
+    companyCode: string;
+    companyName: string;
+}
+
+export interface CompanyPatchRequest {
+    companyCode?: string;
+    companyName?: string;
+}

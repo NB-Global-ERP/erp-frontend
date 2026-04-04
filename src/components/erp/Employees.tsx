@@ -28,7 +28,7 @@ export function Employees() {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Справочник сотрудников</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Участники обучения</h2>
                 <button
                     onClick={() => {
                         setSelectedEmployeeId(null);

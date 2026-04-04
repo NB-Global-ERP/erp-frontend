@@ -26,12 +26,28 @@ export const DEPARTMENTS = [
     { id: 'marketing', name: 'Marketing', budget: 600000, head: 'Смирнова О.Н.' },
 ] as const;
 
-export const STATUS = [
+export const STATUS_OPTIONS = [
     {id: 1, label: "Планируется", value: "planned"},
     {id: 2, label: "В процессе", value: "in_progress"},
     {id: 3, label: "Завершено", value: "completed"},
     {id: 4, label: "Отменено", value: "cancelled"}
 ] as const;
+
+export const STATUS_OPTIONS_FOR_GRID = [
+    { id: "planned", label: "Планируется" },
+    { id: "in_progress", label: "В процессе" },
+    { id: "completed", label: "Завершено" },
+    { id: "cancelled", label: "Отменено" }
+] as const;
+
+
+
+export const STATUS_MAPPER = {
+    "planned": "Планируется",
+    "in_progress": "В процессе",
+    "completed": "Завершено",
+    "cancelled": "Отменено"
+} as const;
 
 export const USER_ROLES = {
     ADMIN: { value: 'admin', label: 'Администратор', level: 100 },

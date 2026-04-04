@@ -1,195 +1,299 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import * as api from '@/services/api';
 import type {
-    Course, Employee, TrainingGroup, GroupParticipant,
-    Specification, Company, TrainingGroupFull
+    Course,
+    Employee,
+    TrainingGroup,
+    Specification,
+    Company
 } from '@/types/erp.types';
-import { getGroupCalculatedFields, calculateSpecificationTotals } from '@/services/calculations';
+import type {
+    CourseRequest,
+    CoursePatchRequest,
+    StudentRequest,
+    StudentPatchRequest,
+    GroupRequest,
+    GroupPatchRequest,
+    SpecificationRequest,
+    SpecificationPatchRequest,
+    CompanyRequest,
+    CompanyPatchRequest
+} from '@/types/api.types';
 
 interface ERPState {
     courses: Course[];
     employees: Employee[];
     companies: Company[];
     groups: TrainingGroup[];
-    participants: GroupParticipant[];
     specifications: Specification[];
 
-    _cachedGroups: TrainingGroupFull[] | null;
-    _lastUpdateTimestamp: number;
+    isLoading: boolean;
+    error: string | null;
 
-    addCourse: (course: Course) => void;
-    updateCourse: (id: string, updates: Partial<Course>) => void;
-    deleteCourse: (id: string) => void;
+    fetchAllData: () => Promise<void>;
 
-    addEmployee: (employee: Employee) => void;
-    updateEmployee: (id: string, updates: Partial<Employee>) => void;
-    deleteEmployee: (id: string) => void;
+    addCourse: (data: CourseRequest) => Promise<void>;
+    updateCourse: (id: number, data: CoursePatchRequest) => Promise<void>;
+    deleteCourse: (id: number) => Promise<void>;
 
-    addGroup: (group: TrainingGroup) => void;
-    updateGroup: (id: string, updates: Partial<TrainingGroup>) => void;
-    deleteGroup: (id: string) => void;
+    addEmployee: (data: StudentRequest) => Promise<void>;
+    updateEmployee: (id: number, data: StudentPatchRequest) => Promise<void>;
+    deleteEmployee: (id: number) => Promise<void>;
 
-    addParticipant: (participant: GroupParticipant) => void;
-    updateParticipant: (id: string, updates: Partial<GroupParticipant>) => void;
-    removeParticipant: (id: string) => void;
+    addGroup: (data: GroupRequest) => Promise<void>;
+    updateGroup: (id: number, data: GroupPatchRequest) => Promise<void>;
+    deleteGroup: (id: number) => Promise<void>;
 
-    addSpecification: (spec: Specification) => void;
-    updateSpecification: (id: string, updates: Partial<Specification>) => void;
-    deleteSpecification: (id: string) => void;
+    addSpecification: (data: SpecificationRequest) => Promise<void>;
+    updateSpecification: (id: number, data: SpecificationPatchRequest) => Promise<void>;
+    deleteSpecification: (id: number) => Promise<void>;
 
-    getGroupsWithCalculations: () => TrainingGroupFull[];
-    getGroupById: (id: string) => TrainingGroupFull | undefined;
-    getSpecificationWithGroups: (id: string) => any;
-
-    invalidateCache: () => void;
+    addCompany: (data: CompanyRequest) => Promise<void>;
+    updateCompany: (id: number, data: CompanyPatchRequest) => Promise<void>;
+    deleteCompany: (id: number) => Promise<void>;
 }
 
-export const useERPStore = create<ERPState>()(
-    persist(
-        (set, get) => ({
-            courses: [],
-            employees: [],
-            companies: [
-                { id: '1', code: 'ROM', name: 'ООО "Ромашка"' },
-                { id: '2', code: 'LUT', name: 'ООО "Лютик"' },
-            ],
-            groups: [],
-            participants: [],
-            specifications: [],
-            _cachedGroups: null,
-            _lastUpdateTimestamp: 0,
+export const useERPStore = create<ERPState>((set) => ({
 
-            invalidateCache: () => {
-                set({ _cachedGroups: null, _lastUpdateTimestamp: Date.now() });
-            },
+    courses: [],
+    employees: [],
+    companies: [],
+    groups: [],
+    specifications: [],
 
-            getGroupsWithCalculations: () => {
-                const state = get();
-                const { groups, participants, _cachedGroups, _lastUpdateTimestamp } = state;
+    isLoading: false,
+    error: null,
 
-                const currentTimestamp = Date.now();
-                if (_cachedGroups && (currentTimestamp - _lastUpdateTimestamp) < 100) {
-                    return _cachedGroups;
-                }
+    fetchAllData: async () => {
+        set({ isLoading: true, error: null });
 
-                const result = groups.map(group => ({
-                    ...group,
-                    ...getGroupCalculatedFields(group, participants.filter(p => p.groupId === group.id))
-                }));
+        try {
+            const [courses, employees, groups, specifications, companies] =
+                await Promise.all([
+                    api.getCourses(),
+                    api.getEmployees(),
+                    api.getGroups(),
+                    api.getSpecifications(),
+                    api.getCompanies(),
+                ]);
 
-                set({ _cachedGroups: result, _lastUpdateTimestamp: currentTimestamp });
-                return result;
-            },
+            set({
+                courses,
+                employees,
+                groups,
+                specifications,
+                companies,
+                isLoading: false,
+            });
 
-            getGroupById: (id: string) => {
-                const state = get();
-                const { groups, participants } = state;
-                const group = groups.find(g => g.id === id);
-                if (!group) return undefined;
-                return {
-                    ...group,
-                    ...getGroupCalculatedFields(group, participants.filter(p => p.groupId === id))
-                };
-            },
-
-            getSpecificationWithGroups: (id: string) => {
-                const state = get();
-                const { specifications, groups, participants } = state;
-                const spec = specifications.find(s => s.id === id);
-                if (!spec) return undefined;
-
-                const specGroups = groups.filter(g => spec.groupIds.includes(g.id));
-                const groupsWithCalc = specGroups.map(group => ({
-                    ...group,
-                    ...getGroupCalculatedFields(group, participants.filter(p => p.groupId === group.id))
-                }));
-
-                const totals = calculateSpecificationTotals(specGroups);
-                return { ...spec, groups: groupsWithCalc, ...totals };
-            },
-
-            addCourse: (course) => {
-                set((state) => ({ courses: [...state.courses, course] }));
-                get().invalidateCache();
-            },
-            updateCourse: (id, updates) => {
-                set((state) => ({
-                    courses: state.courses.map(c => c.id === id ? { ...c, ...updates } : c)
-                }));
-                get().invalidateCache();
-            },
-            deleteCourse: (id) => {
-                set((state) => ({ courses: state.courses.filter(c => c.id !== id) }));
-                get().invalidateCache();
-            },
-
-            addEmployee: (employee) => {
-                set((state) => ({ employees: [...state.employees, employee] }));
-                get().invalidateCache();
-            },
-            updateEmployee: (id, updates) => {
-                set((state) => ({
-                    employees: state.employees.map(e => e.id === id ? { ...e, ...updates } : e)
-                }));
-                get().invalidateCache();
-            },
-            deleteEmployee: (id) => {
-                set((state) => ({ employees: state.employees.filter(e => e.id !== id) }));
-                get().invalidateCache();
-            },
-
-            addGroup: (group) => {
-                set((state) => ({ groups: [...state.groups, group] }));
-                get().invalidateCache();
-            },
-            updateGroup: (id, updates) => {
-                set((state) => ({
-                    groups: state.groups.map(g => g.id === id ? { ...g, ...updates } : g)
-                }));
-                get().invalidateCache();
-            },
-            deleteGroup: (id) => {
-                set((state) => ({
-                    groups: state.groups.filter(g => g.id !== id),
-                    participants: state.participants.filter(p => p.groupId !== id)
-                }));
-                get().invalidateCache();
-            },
-
-            addParticipant: (participant) => {
-                set((state) => ({ participants: [...state.participants, participant] }));
-                get().invalidateCache();
-            },
-            updateParticipant: (id, updates) => {
-                set((state) => ({
-                    participants: state.participants.map(p => p.id === id ? { ...p, ...updates } : p)
-                }));
-                get().invalidateCache();
-            },
-            removeParticipant: (id) => {
-                set((state) => ({
-                    participants: state.participants.filter(p => p.id !== id)
-                }));
-                get().invalidateCache();
-            },
-
-            addSpecification: (spec) => {
-                set((state) => ({ specifications: [...state.specifications, spec] }));
-                get().invalidateCache();
-            },
-            updateSpecification: (id, updates) => {
-                set((state) => ({
-                    specifications: state.specifications.map(s => s.id === id ? { ...s, ...updates } : s)
-                }));
-                get().invalidateCache();
-            },
-            deleteSpecification: (id) => {
-                set((state) => ({ specifications: state.specifications.filter(s => s.id !== id) }));
-                get().invalidateCache();
-            },
-        }),
-        {
-            name: 'erp-storage',
+        } catch (e) {
+            set({
+                error: (e as Error).message,
+                isLoading: false,
+            });
         }
-    )
-);
+    },
+
+    addCourse: async (data) => {
+        try {
+            const { id } = await api.createCourse(data);
+            const created = await api.getCourse(id);
+
+            set((state) => ({
+                courses: [...state.courses, created],
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    updateCourse: async (id, data) => {
+        try {
+            const updated = await api.updateCourse(id, data);
+
+            set((state) => ({
+                courses: state.courses.map(c =>
+                    c.id === id ? updated : c
+                ),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    deleteCourse: async (id) => {
+        try {
+            await api.deleteCourse(id);
+
+            set((state) => ({
+                courses: state.courses.filter(c => c.id !== id),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    addEmployee: async (data) => {
+        try {
+            await api.createEmployee(data);
+            const employees = await api.getEmployees();
+
+            set({ employees });
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    updateEmployee: async (id, data) => {
+        try {
+            const updated = await api.updateEmployee(id, data);
+
+            set((state) => ({
+                employees: state.employees.map(e =>
+                    e.id === id ? updated : e
+                ),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    deleteEmployee: async (id) => {
+        try {
+            await api.deleteEmployee(id);
+
+            set((state) => ({
+                employees: state.employees.filter(e => e.id !== id),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    addGroup: async (data) => {
+        try {
+            await api.createGroup(data);
+            const groups = await api.getGroups();
+
+            set({ groups });
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    updateGroup: async (id, data) => {
+        try {
+            const updated = await api.updateGroup(id, data);
+
+            set((state) => ({
+                groups: state.groups.map(g =>
+                    g.id === id ? updated : g
+                ),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    deleteGroup: async (id) => {
+        try {
+            await api.deleteGroup(id);
+
+            set((state) => ({
+                groups: state.groups.filter(g => g.id !== id),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    addSpecification: async (data) => {
+        try {
+            await api.createSpecification(data);
+            const specifications = await api.getSpecifications();
+
+            set({ specifications });
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    updateSpecification: async (id, data) => {
+        try {
+            const updated = await api.updateSpecification(id, data);
+
+            set((state) => ({
+                specifications: state.specifications.map(s =>
+                    s.id === id ? updated : s
+                ),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    deleteSpecification: async (id) => {
+        try {
+            await api.deleteSpecification(id);
+
+            set((state) => ({
+                specifications: state.specifications.filter(s => s.id !== id),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    addCompany: async (data) => {
+        try {
+            await api.createCompany(data);
+            const companies = await api.getCompanies();
+
+            set({ companies });
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    updateCompany: async (id, data) => {
+        try {
+            const updated = await api.updateCompany(id, data);
+
+            set((state) => ({
+                companies: state.companies.map(c =>
+                    c.id === id ? updated : c
+                ),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    deleteCompany: async (id) => {
+        try {
+            await api.deleteCompany(id);
+
+            set((state) => ({
+                companies: state.companies.filter(c => c.id !== id),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+}));
