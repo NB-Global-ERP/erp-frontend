@@ -1,15 +1,24 @@
 import { Users, BookOpen, FileText, TrendingUp, Building2 } from 'lucide-react';
-import { formatCurrency } from '@/utils/formatters.ts';
+import {formatCurrency, formatPercent} from '@/utils/formatters.ts';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import {useERPStore} from "@/stores/erpStore.ts";
+import { useERPStore } from "@/stores/erpStore.ts";
 
 export function Dashboard() {
     const groups = useERPStore((state) => state.groups);
 
-    const { basicStats, totalCourses, totalCompanies, totalEmployees, totalGroups, totalSpecifications, averageGroupProgress, totalRevenue, isLoading } = useAnalytics();
+    const {
+        basicStats,
+        totalCourses,
+        totalCompanies,
+        totalEmployees,
+        totalGroups,
+        totalSpecifications,
+        averageGroupProgress,
+        totalRevenue,
+        isLoading
+    } = useAnalytics();
 
     const totalBudget = totalRevenue;
-
     const averageProgress = averageGroupProgress;
 
     const stats = [
@@ -55,26 +64,46 @@ export function Dashboard() {
                 {stats.map((stat) => (
                     <div
                         key={stat.label}
-                        className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                        className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-lg transition-shadow"
                     >
                         <div className={`p-2 rounded-md ${stat.color}`}>
-                            <stat.icon className="w-5 h-5" />
+                            <stat.icon className="w-5 h-5"/>
                         </div>
-
                         <div>
-                            <p className="text-xs text-gray-500">
-                                {stat.label}
-                            </p>
-                            <p className="text-lg font-semibold text-gray-900">
-                                {stat.value}
-                            </p>
+                            <p className="text-xs text-gray-500">{stat.label}</p>
+                            <p className="text-lg font-semibold text-gray-900">{stat.value}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2 bg-white border border-gray-200 rounded-lg">
+
+            <div className="grid grid-cols-3 gap-6">
+
+                <div className="bg-white border border-gray-200 rounded-lg p-5">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                        Статистика курсов
+                    </h3>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Общая длительность всех курсов</span>
+                            <span className="font-semibold text-gray-900">{basicStats?.totalDuration || 0} дней</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Средняя длительность курса</span>
+                            <span className="font-semibold text-gray-900">{basicStats?.avgDuration || 0} дней</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-sm text-gray-600">Самый короткий курс</span>
+                            <span className="font-semibold text-gray-900">{basicStats?.minDuration || 0} дней</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2">
+                            <span className="text-sm text-gray-600">Самый длинный курс</span>
+                            <span className="font-semibold text-gray-900">{basicStats?.maxDuration || 0} дней</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-lg">
                     <div className="px-5 py-4 border-b border-gray-100">
                         <h2 className="text-xl font-semibold text-gray-800">
                             Последние группы
@@ -97,21 +126,21 @@ export function Dashboard() {
                                             {group.courseId}
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            {group.startDate.toLocaleDateString('ru-RU')} —{' '}
-                                            {group.endDate.toLocaleDateString('ru-RU')}
+                                            {new Date(group.startDate).toLocaleDateString('ru-RU')} —{' '}
+                                            {new Date(group.endDate).toLocaleDateString('ru-RU')}
                                         </p>
                                     </div>
 
                                     <div className="flex items-center gap-5 text-sm">
                                         <div className="flex items-center gap-1">
-                                            <Users className="w-3 h-3 text-gray-400" />
+                                            <Users className="w-3 h-3 text-gray-400"/>
                                             <span className="text-gray-600">
                                                 {group.participantCount}
                                             </span>
                                         </div>
 
                                         <div className="flex items-center gap-1">
-                                            <TrendingUp className="w-3 h-3 text-gray-400" />
+                                            <TrendingUp className="w-3 h-3 text-gray-400"/>
                                             <span className="font-medium text-gray-900">
                                                 {Math.round(group.averageProgress)}%
                                             </span>
@@ -136,7 +165,7 @@ export function Dashboard() {
                             </div>
                             <div className="text-right">
                                 <p className="text-3xl font-semibold text-gray-900">
-                                    {averageProgress}%
+                                    {formatPercent(averageProgress)}
                                 </p>
                             </div>
                         </div>
@@ -144,7 +173,7 @@ export function Dashboard() {
                         <div className="w-full bg-gray-100 rounded-full h-2">
                             <div
                                 className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                                style={{width: `${averageProgress}%`}}
+                                style={{width: formatPercent(averageProgress)}}
                             />
                         </div>
 
