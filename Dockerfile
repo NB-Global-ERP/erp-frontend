@@ -12,7 +12,6 @@ RUN yarn install
 
 COPY . ./
 
-RUN npx tsc --noEmit --skipLibCheck || true
 RUN yarn build
 
 FROM node:20-alpine AS production
