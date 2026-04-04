@@ -61,10 +61,20 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
     });
 
     const onSubmit = async (data: GroupFormData) => {
+
+        const requestData = {
+            courseId: data.courseId,
+            dateBegin: new Date(data.dateBegin).toISOString(),
+            dateEnd: new Date(data.dateEnd).toISOString(),
+            pricePerPerson: data.pricePerPerson,
+            courseCompletionId: data.courseCompletionId,
+            specificationId: data.specificationId || 0,
+        };
+
         if (groupId) {
-            await updateGroup(groupId, data);
+            await updateGroup(groupId, requestData);
         } else {
-            await addGroup(data);
+            await addGroup(requestData);
         }
         onSave();
     };
