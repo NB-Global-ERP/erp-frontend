@@ -1,21 +1,12 @@
-import { useERPStore } from '@/stores/erpStore';
 import { Users, BookOpen, FileText, TrendingUp } from 'lucide-react';
 import { formatCurrency } from '@/utils/formatters.ts';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import {useERPStore} from "@/stores/erpStore.ts";
 
 export function Dashboard() {
     const groups = useERPStore((state) => state.groups);
-    const courses = useERPStore((state) => state.courses);
-    const employees = useERPStore((state) => state.employees);
-    const specifications = useERPStore((state) => state.specifications);
-    const isLoading = useERPStore((state) => state.isLoading);
 
-    const { totalRevenue, averageGroupProgress } = useAnalytics();
-
-    const totalGroups = groups.length;
-    const totalCourses = courses.length;
-    const totalEmployees = employees.length;
-    const totalSpecifications = specifications.length;
+    const { basicStats, totalCourses, totalCompanies, totalEmployees, totalGroups, totalSpecifications, averageGroupProgress, totalRevenue, isLoading } = useAnalytics();
 
     const totalBudget = totalRevenue;
 
@@ -26,6 +17,7 @@ export function Dashboard() {
         { label: 'Курсы', value: totalCourses, icon: BookOpen, color: 'bg-primary-50 text-primary-600' },
         { label: 'Сотрудники', value: totalEmployees, icon: Users, color: 'bg-primary-50 text-primary-600' },
         { label: 'Спецификации', value: totalSpecifications, icon: FileText, color: 'bg-primary-50 text-primary-600' },
+        { label: 'Компании', value: totalCompanies, icon: FileText, color: 'bg-primary-50 text-primary-600' },
     ];
 
     if (isLoading) {

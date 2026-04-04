@@ -127,29 +127,17 @@ export const useERPStore = create<ERPState>((set, get) => ({
     fetchCourseAnalytics: async () => {
         try {
             const [
-                totalDuration,
-                minDuration,
-                maxDuration,
                 count,
-                avgDuration,
                 basicStats
             ] = await Promise.all([
-                api.getCoursesTotalDuration(),
-                api.getCoursesMinDuration(),
-                api.getCoursesMaxDuration(),
                 api.getCoursesCount(),
-                api.getCoursesAvgDuration(),
                 api.getCoursesBasicStats(),
             ]);
 
             set((state) => ({
                 analytics: {
                     ...state.analytics,
-                    courseTotalDuration: totalDuration,
-                    courseMinDuration: minDuration,
-                    courseMaxDuration: maxDuration,
                     courseCount: count,
-                    courseAvgDuration: avgDuration,
                     courseBasicStats: basicStats,
                 }
             }));
@@ -164,20 +152,12 @@ export const useERPStore = create<ERPState>((set, get) => ({
 
         try {
             const [
-                courseTotalDuration,
-                courseMinDuration,
-                courseMaxDuration,
                 courseCount,
-                courseAvgDuration,
                 courseBasicStats,
                 totalCompanies,
                 totalEmployeesCount,
             ] = await Promise.all([
-                api.getCoursesTotalDuration(),
-                api.getCoursesMinDuration(),
-                api.getCoursesMaxDuration(),
                 api.getCoursesCount(),
-                api.getCoursesAvgDuration(),
                 api.getCoursesBasicStats(),
                 api.getCompaniesCount(),
                 api.getEmployees().then(emps => emps.length),
@@ -195,11 +175,7 @@ export const useERPStore = create<ERPState>((set, get) => ({
             set((state) => ({
                 analytics: {
                     ...state.analytics,
-                    courseTotalDuration,
-                    courseMinDuration,
-                    courseMaxDuration,
                     courseCount,
-                    courseAvgDuration,
                     courseBasicStats,
                     totalCompanies,
                     totalEmployees: totalEmployeesCount,

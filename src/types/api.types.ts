@@ -146,10 +146,9 @@ export interface CourseCompletionStatusPatchRequest {
     name?: string;
 }
 
-export interface CourseBasicStats {
-    totalDuration: number;
-    minDuration: number;
-    maxDuration: number;
-    avgDuration: number;
-    count: number;
+export interface CourseBasicStatsResponse {
+    sum: number;
+    avg: number;
+    min: number;
+    max: number;
 }

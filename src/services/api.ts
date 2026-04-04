@@ -5,7 +5,7 @@ import {
     mapGroup,
     mapSpecification,
     mapCompany,
-    mapStatuses
+    mapStatuses, mapStats
 } from '@/utils/adapters';
 
 import type {
@@ -13,7 +13,8 @@ import type {
     Employee,
     TrainingGroup,
     Specification,
-    Company, Status
+    Company, Status,
+    CourseBasicStats
 } from '@/types/erp.types';
 
 import type {
@@ -29,8 +30,7 @@ import type {
     CompanyPatchRequest,
     CourseCompletionStatusRequest,
     CourseCompletionStatusPatchRequest,
-    CreateResponse,
-    CourseBasicStats
+    CreateResponse
 } from '@/types/api.types';
 
 export const getCourses = async (): Promise<Course[]> =>
@@ -53,23 +53,11 @@ export const updateCourse = async (
 export const deleteCourse = async (id: number): Promise<void> =>
     raw.deleteCourseRaw(id);
 
-export const getCoursesTotalDuration = async (): Promise<number> =>
-    raw.getCoursesTotalDurationRaw();
-
-export const getCoursesMinDuration = async (): Promise<number> =>
-    raw.getCoursesMinDurationRaw();
-
-export const getCoursesMaxDuration = async (): Promise<number> =>
-    raw.getCoursesMaxDurationRaw();
-
 export const getCoursesCount = async (): Promise<number> =>
     raw.getCoursesCountRaw();
 
-export const getCoursesAvgDuration = async (): Promise<number> =>
-    raw.getCoursesAvgDurationRaw();
-
 export const getCoursesBasicStats = async (): Promise<CourseBasicStats> =>
-    raw.getCoursesBasicStatsRaw();
+    mapStats(await raw.getCoursesBasicStatsRaw());
 
 export const getEmployees = async (): Promise<Employee[]> =>
     (await raw.getStudentsRaw()).map(mapEmployee);

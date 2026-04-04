@@ -20,7 +20,7 @@ import type {
     CompanyPatchRequest,
     CourseCompletionStatusRequest,
     CourseCompletionStatusPatchRequest,
-    CourseBasicStats
+    CourseBasicStatsResponse
 } from '@/types/api.types';
 
 export const apiClient = axios.create({
@@ -56,23 +56,11 @@ export const updateCourseRaw = (
 export const deleteCourseRaw = (id: number): Promise<void> =>
     apiClient.delete('/courses', { params: { id } });
 
-export const getCoursesTotalDurationRaw = (): Promise<number> =>
-    apiClient.get('/courses/analytics/totalDuration');
-
-export const getCoursesMinDurationRaw = (): Promise<number> =>
-    apiClient.get('/courses/analytics/minDuration');
-
-export const getCoursesMaxDurationRaw = (): Promise<number> =>
-    apiClient.get('/courses/analytics/maxDuration');
-
 export const getCoursesCountRaw = (): Promise<number> =>
-    apiClient.get('/courses/analytics/countCources');
+    apiClient.get('/courses/analytics/count');
 
-export const getCoursesBasicStatsRaw = (): Promise<CourseBasicStats> =>
+export const getCoursesBasicStatsRaw = (): Promise<CourseBasicStatsResponse> =>
     apiClient.get('/courses/analytics/basicStats');
-
-export const getCoursesAvgDurationRaw = (): Promise<number> =>
-    apiClient.get('/courses/analytics/avgDuration');
 
 export const getStudentsRaw = (): Promise<StudentResponse[]> =>
     apiClient.get('/students');

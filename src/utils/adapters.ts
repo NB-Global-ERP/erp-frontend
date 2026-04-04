@@ -3,7 +3,7 @@ import type {
     StudentResponse,
     CourseResponse,
     GroupResponse,
-    SpecificationResponse, CourseCompletionStatusResponse
+    SpecificationResponse, CourseCompletionStatusResponse, CourseBasicStatsResponse
 } from '@/types/api.types';
 
 import type {
@@ -11,7 +11,7 @@ import type {
     Employee,
     Course,
     TrainingGroup,
-    Specification, Status
+    Specification, Status, CourseBasicStats
 } from '@/types/erp.types';
 
 export const mapCompany = (c: CompanyResponse): Company => ({
@@ -61,4 +61,11 @@ export const mapSpecification = (s: SpecificationResponse): Specification => ({
 export const mapStatuses = (s: CourseCompletionStatusResponse): Status => ({
     id: s.id,
     name: s.name,
+});
+
+export const mapStats = (a: CourseBasicStatsResponse): CourseBasicStats => ({
+    totalDuration: a.sum,
+    minDuration: a.min,
+    maxDuration: a.max,
+    avgDuration: a.avg,
 });

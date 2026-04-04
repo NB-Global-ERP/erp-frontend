@@ -1,4 +1,3 @@
-import type {CourseBasicStats} from "@/types/api.types.ts";
 
 export interface Company {
     id: number;
@@ -49,12 +48,15 @@ export interface Status {
     name: string;
 }
 
+export interface CourseBasicStats {
+    totalDuration: number;
+    minDuration: number;
+    maxDuration: number;
+    avgDuration: number;
+}
+
 export interface AnalyticsState {
-    courseTotalDuration: number;
-    courseMinDuration: number;
-    courseMaxDuration: number;
     courseCount: number;
-    courseAvgDuration: number;
     courseBasicStats: CourseBasicStats | null;
 
     totalCompanies: number;
