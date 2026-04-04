@@ -146,10 +146,6 @@ export interface CourseCompletionStatusPatchRequest {
     name?: string;
 }
 
-export interface CourseCountResponse {
-    count: number;
-}
-
 export interface CourseBasicStatsResponse {
     sum: number;
     avg: number;
