@@ -99,13 +99,13 @@ export const addStudentToGroupRaw = (groupId: number, studentId: number): Promis
     apiClient.post(`/groups/${groupId}/add/student/${studentId}`);
 
 export const getSpecificationsRaw = (): Promise<SpecificationResponse[]> =>
-    apiClient.get('/specifications');
+    apiClient.get('/specifications/list');
 
 export const getSpecificationRaw = (id: number): Promise<SpecificationResponse> =>
     apiClient.get('/specifications', { params: { id } });
 
 export const createSpecificationRaw = (data: SpecificationRequest): Promise<CreateResponse> =>
-    apiClient.post('/specifications/list', data);
+    apiClient.post('/specifications', data);
 
 export const updateSpecificationRaw = (id: number, data: SpecificationPatchRequest): Promise<SpecificationResponse> =>
     apiClient.patch('/specifications', data, { params: { id } });
