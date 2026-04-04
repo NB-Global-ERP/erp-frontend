@@ -1,89 +1,76 @@
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
 import { X } from 'lucide-react';
-import {formatCurrency} from "@/utils/formatters.ts";
+import { formatCurrency } from "@/utils/formatters.ts";
 
 const specSchema = z.object({
-    number: z.string().min(1, 'Введите номер'),
-    date: z.string().min(1, 'Укажите дату'),
-    companyId: z.string().min(1, 'Выберите компанию'),
+    datetime: z.string().min(1, 'Укажите дату'),
+    number: z.number().min(1, 'Введите номер'),
+    companyId: z.number().min(1, 'Выберите компанию'),
 });
 
 type SpecFormData = z.infer<typeof specSchema>;
 
 interface SpecificationFormProps {
-    specId?: string | null;
+    specId?: number | null;
     onClose: () => void;
     onSave: () => void;
 }
 
 export function SpecificationForm({ specId, onClose, onSave }: SpecificationFormProps) {
-    const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
-
-    const companies = useERPStore((state) => state.companies);
     const specifications = useERPStore((state) => state.specifications);
-    const groups = useERPStore((state) => state.getGroupsWithCalculations());
+    const companies = useERPStore((state) => state.companies);
+    const groups = useERPStore((state) => state.groups);
+    const courses = useERPStore((state) => state.courses);
     const addSpecification = useERPStore((state) => state.addSpecification);
     const updateSpecification = useERPStore((state) => state.updateSpecification);
 
     const existingSpec = specId ? specifications.find(s => s.id === specId) : null;
 
-    const { register, handleSubmit, formState: { errors } } = useForm<SpecFormData>({
-        resolver: zodResolver(specSchema),
-        defaultValues: existingSpec ? {
-            number: existingSpec.number,
-            date: existingSpec.date.toISOString().split('T')[0],
-            companyId: existingSpec.companyId,
-        } : {
-            number: '',
-            date: new Date().toISOString().split('T')[0],
-            companyId: '',
-        },
-    });
+    const linkedGroups = groups.filter(g => g.specificationId === specId);
 
-    useEffect(() => {
-        if (existingSpec) {
-            setSelectedGroupIds(existingSpec.groupIds);
-        }
-    }, [existingSpec]);
-
-    const availableGroups = groups.filter(g => !g.specificationId || g.specificationId === specId);
-
-    const selectedGroups = groups.filter(g => selectedGroupIds.includes(g.id));
-    const totalAmount = selectedGroups.reduce((sum, g) => sum + g.totalCost, 0);
+    const totalAmount = linkedGroups.reduce((sum, g) => sum + (g.totalCost || 0), 0);
     const vatAmount = totalAmount * 0.22;
     const totalWithVat = totalAmount + vatAmount;
 
-    const onSubmit = (data: SpecFormData) => {
+    const { register, handleSubmit, formState: { errors } } = useForm<SpecFormData>({
+        resolver: zodResolver(specSchema),
+        defaultValues: existingSpec
+            ? {
+                datetime: existingSpec.date.toISOString().split('T')[0],
+                number: existingSpec.number,
+                companyId: existingSpec.companyId,
+            }
+            : {
+                datetime: new Date().toISOString().split('T')[0],
+                number: 1,
+                companyId: undefined,
+            },
+    });
+
+    const onSubmit = async (data: SpecFormData) => {
+        const requestData = {
+            datetime: data.datetime,
+            number: data.number,
+            companyId: data.companyId,
+            totalAmountExcludingVat: totalAmount,
+            vatAmount22Percent: vatAmount,
+            totalAmountIncludingVat: totalWithVat,
+        };
+
         if (specId) {
-            updateSpecification(specId, {
-                number: data.number,
-                date: new Date(data.date),
-                companyId: data.companyId,
-                groupIds: selectedGroupIds,
-            });
+            await updateSpecification(specId, requestData);
         } else {
-            addSpecification({
-                id: Date.now().toString(),
-                documentId: Date.now().toString(),
-                number: data.number,
-                date: new Date(data.date),
-                companyId: data.companyId,
-                groupIds: selectedGroupIds,
-                totalAmount: 0,
-                vatAmount: 0,
-                totalWithVat: 0,
-            });
+            await addSpecification(requestData);
         }
         onSave();
     };
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl">
                 <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-800">
                         {specId ? 'Редактирование спецификации' : 'Создание спецификации'}
@@ -93,7 +80,7 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                     </button>
                 </div>
 
-                <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] space-y-6">
+                <div className="p-6 space-y-6">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -101,10 +88,13 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                                     Номер спецификации *
                                 </label>
                                 <input
-                                    {...register('number')}
+                                    type="number"
+                                    {...register('number', { valueAsNumber: true })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 />
-                                {errors.number && <p className="mt-1 text-sm text-red-600">{errors.number.message}</p>}
+                                {errors.number && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.number.message}</p>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -112,10 +102,12 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                                 </label>
                                 <input
                                     type="date"
-                                    {...register('date')}
+                                    {...register('datetime')}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 />
-                                {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>}
+                                {errors.datetime && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.datetime.message}</p>
+                                )}
                             </div>
                         </div>
 
@@ -124,7 +116,7 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                                 Компания *
                             </label>
                             <select
-                                {...register('companyId')}
+                                {...register('companyId', { valueAsNumber: true })}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             >
                                 <option value="">Выберите компанию</option>
@@ -134,44 +126,49 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
                                     </option>
                                 ))}
                             </select>
-                            {errors.companyId && <p className="mt-1 text-sm text-red-600">{errors.companyId.message}</p>}
+                            {errors.companyId && (
+                                <p className="mt-1 text-sm text-red-600">{errors.companyId.message}</p>
+                            )}
                         </div>
                     </form>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Учебные группы
-                        </label>
-                        <div className="border border-gray-200 rounded-lg divide-y max-h-60 overflow-y-auto">
-                            {availableGroups.map(group => {
-                                const course = useERPStore.getState().courses.find(c => c.id === group.courseId);
-                                return (
-                                    <label key={group.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedGroupIds.includes(group.id)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedGroupIds([...selectedGroupIds, group.id]);
-                                                } else {
-                                                    setSelectedGroupIds(selectedGroupIds.filter(id => id !== group.id));
-                                                }
-                                            }}
-                                            className="w-4 h-4 text-primary-500 rounded"
-                                        />
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-800">{course?.name}</p>
-                                            <p className="text-sm text-gray-500">
-                                                {group.participantCount} участников • {formatCurrency(group.totalCost)}
-                                            </p>
-                                        </div>
-                                    </label>
-                                );
-                            })}
+                    {specId && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Группы в спецификации
+                            </label>
+                            <div className="border border-gray-200 rounded-lg divide-y max-h-60 overflow-y-auto">
+                                {linkedGroups.length === 0 ? (
+                                    <div className="p-4 text-center text-gray-500">
+                                        Нет привязанных групп
+                                    </div>
+                                ) : (
+                                    linkedGroups.map(group => {
+                                        const course = courses.find(c => c.id === group.courseId);
+                                        return (
+                                            <div key={group.id} className="flex items-center justify-between p-3">
+                                                <div>
+                                                    <p className="font-medium text-gray-800">
+                                                        {course?.name || `Курс ${group.courseId}`}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {group.participantCount || 0} участников
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="font-medium text-gray-800">
+                                                        {formatCurrency(group.totalCost || 0)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {selectedGroups.length > 0 && (
+                    {specId && linkedGroups.length > 0 && (
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Сумма без НДС:</span>
@@ -190,12 +187,14 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
 
                     <div className="flex justify-end gap-3 pt-4">
                         <button
+                            type="button"
                             onClick={onClose}
                             className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                         >
                             Отмена
                         </button>
                         <button
+                            type="submit"
                             onClick={handleSubmit(onSubmit)}
                             className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
                         >

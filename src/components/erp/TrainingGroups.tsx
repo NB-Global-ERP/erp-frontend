@@ -1,77 +1,35 @@
-import {useMemo, useState} from 'react';
-import {Grid, Toolbar, ContextMenu, HeaderMenu} from '@svar-ui/react-grid';
-import { useERPStore } from '@/stores/erpStore';
-import { TrainingGroupForm } from './TrainingGroupForm';
+import { useState } from 'react';
+import { Grid, Toolbar, ContextMenu, HeaderMenu } from '@svar-ui/react-grid';
 import { Plus } from 'lucide-react';
-import {formatCurrency} from "@/utils/formatters.ts";
-import ru from "@/utils/ru.ts";
 import { Locale } from '@svar-ui/react-core';
-import {STATUS_MAPPER, STATUS_OPTIONS_FOR_GRID} from "@/utils/constants.ts";
+import { TrainingGroupForm } from './TrainingGroupForm';
+import { formatCurrency } from '@/utils/formatters';
+import ru from '@/utils/ru';
 import {useCourses} from "@/hooks/useCourses.ts";
+import {useGroups} from "@/hooks/useGroups.ts";
 
 export function TrainingGroups() {
     const [showForm, setShowForm] = useState(false);
-    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
     const [api, setApi] = useState(null);
 
-    const groups = useERPStore((state) => state.groups);
-    const participants = useERPStore((state) => state.participants);
+    const { groups, isLoading } = useGroups();
     const courses = useCourses();
 
-    const groupsWithCalculations = useMemo(() => {
-        if (!groups || !participants) return [];
-
-        return groups.map(group => ({
-            ...group,
-            participantCount: participants.filter(p => p.groupId === group.id).length,
-            totalCost: participants.filter(p => p.groupId === group.id).length * group.pricePerPerson,
-            averageProgress: 0, // Рассчитайте по необходимости
-        }));
-    }, [groups, participants]);
-
-    const courseOptions = useMemo(() => {
-        if (!courses || !Array.isArray(courses)) return [];
-        return courses.map(course => ({
-            id: course.id,
-            label: course.name
-        }));
-    }, [courses]);
-
     const columns = [
-        { id: 'name', header: 'Название группы', width: 200, editor: 'text' },
-        { id: 'courseId', header: 'Курс', width: 160,
-            template: (value: string) => {
-                if (!value) return '—';
-                const course = courses?.find(c => c.id === value);
-                return course?.name || value;
-            }, editor: { type: 'richselect'}, options: courseOptions },
-        { id: 'startDate', header: 'Дата начала', width: 120, editor: 'datepicker',
-            template: (value: Date | string) => {
-                if (!value) return '—';
-                if (value instanceof Date) {
-                    return isNaN(value.getTime()) ? '—' : value.toLocaleDateString('ru-RU');
-                }
-                const date = new Date(value);
-                return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
-            }},
-        { id: 'endDate', header: 'Дата окончания', width: 120, editor: 'datepicker',
-            template: (value: Date | string) => {
-                if (!value) return '—';
-                if (value instanceof Date) {
-                    return isNaN(value.getTime()) ? '—' : value.toLocaleDateString('ru-RU');
-                }
-                const date = new Date(value);
-                return isNaN(date.getTime()) ? '—' : date.toLocaleDateString('ru-RU');
-            }},
+        { id: 'id', header: 'ID', width: 80 },
+        { id: 'courseId', header: 'Курс', width: 180,
+            template: (value: number) => courses.find(c => c.id === value)?.name || '—'},
+        { id: 'startDate', header: 'Дата начала', width: 120,
+            template: (value: Date | string) => value ? new Date(value).toLocaleDateString('ru-RU') : '—'},
+        { id: 'endDate', header: 'Дата окончания', width: 120,
+            template: (value: Date | string) => value ? new Date(value).toLocaleDateString('ru-RU') : '—'},
         { id: 'participantCount', header: 'Участников', width: 100 },
         { id: 'averageProgress', header: 'Прогресс', width: 100,
-            template: (value: number) => `${value}%`,
-            editor: 'number' },
+            template: (value: number) => `${value}%`, editor: 'number' },
         { id: 'totalCost', header: 'Стоимость', width: 150,
             template: (value: number) => formatCurrency(value) },
-        { id: 'status', header: 'Статус', width: 120,
-            template: (value: string) => STATUS_MAPPER[value as keyof typeof STATUS_MAPPER] || value,
-            editor: { type: 'richselect'}, options: STATUS_OPTIONS_FOR_GRID},
+        { id: 'status', header: 'Статус', width: 120},
     ];
 
     const toolbarItems = [
@@ -91,15 +49,25 @@ export function TrainingGroups() {
             comp: 'button',
             icon: 'wxi-refresh',
             text: 'Обновить',
-            action: () => {},
+            action: async () => {},
         },
     ];
 
+    if (isLoading && groups.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Загрузка групп...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Учебные группы</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">Учебные группы</h2>
                 <button
                     onClick={() => {
                         setSelectedGroupId(null);
@@ -116,7 +84,7 @@ export function TrainingGroups() {
                     <HeaderMenu api={api}>
                         <Grid
                             init={setApi}
-                            data={groupsWithCalculations}
+                            data={groups}
                             columns={columns}
                             toolbar={<Toolbar items={toolbarItems} />}
                             onRowDoubleClick={(row) => {

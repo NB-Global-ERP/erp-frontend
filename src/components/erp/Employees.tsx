@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
-import { useERPStore } from '@/stores/erpStore';
 import { EmployeeForm } from './EmployeeForm';
 import { Plus } from 'lucide-react';
 import ru from "@/utils/ru.ts";
 import {Locale} from "@svar-ui/react-core";
+import {useEmployees} from "@/hooks/useEmployees.ts";
+import {useCompanies} from "@/hooks/useCompanies.ts";
 
 export function Employees() {
     const [showForm, setShowForm] = useState(false);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
     const [api, setApi] = useState(null);
 
-    const employees = useERPStore((state) => state.employees);
-    const companies = useERPStore((state) => state.companies);
+    const employees = useEmployees()
+    const companies = useCompanies();
 
     const employeesWithCompany = employees.map(emp => ({
         ...emp,
@@ -28,7 +29,7 @@ export function Employees() {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Участники обучения</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">Участники обучения</h2>
                 <button
                     onClick={() => {
                         setSelectedEmployeeId(null);

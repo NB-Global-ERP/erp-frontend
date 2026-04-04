@@ -1,61 +1,104 @@
 import { useState, useMemo } from 'react';
-import { Gantt, ContextMenu} from '@svar-ui/react-gantt';
+import { Gantt, ContextMenu } from '@svar-ui/react-gantt';
 import { Locale } from '@svar-ui/react-core';
 import { useERPStore } from '@/stores/erpStore';
-import { useCourses } from '@/hooks/useCourses';
 import ru from '@/utils/ru';
-import {formatDayMonthRu, formatMonthYearRu} from "@/utils/formatters.ts";
+import { formatDayMonthRu, formatMonthYearRu } from "@/utils/formatters.ts";
 
 const scales = [
-    { unit: 'week', step: 1, format: formatDayMonthRu, label: "неделя"},
-    { unit: 'month', step: 1, format: formatMonthYearRu, label: "месяц"},
-    { unit: 'quarter', step: 1, format: '%Q-й %Y', label: "квартал"},
+    { unit: 'week', step: 1, format: formatDayMonthRu, label: "неделя" },
+    { unit: 'month', step: 1, format: formatMonthYearRu, label: "месяц" },
+    { unit: 'quarter', step: 1, format: '%Q-й %Y', label: "квартал" },
 ];
 
 const columns = [
     { id: 'text', header: 'Название', width: 150 },
     { id: 'start', header: 'Начало', width: 100 },
     { id: 'duration', header: 'Длительность', width: 150 },
-]
+];
+
+const getStatusColor = (statusName: string): string => {
+    const colors: Record<string, string> = {
+        'Планируется': '#3b82f6',
+        'В процессе': '#f59e0b',
+        'Завершён': '#22c55e',
+        'Отменён': '#ef4444',
+    };
+    return colors[statusName] || '#6b7280';
+};
 
 export function TrainingGantt() {
     const [scaleIndex, setScaleIndex] = useState(0);
     const [api, setApi] = useState(null);
-    const groups = useERPStore((state) => state.getGroupsWithCalculations());
+
+    const groups = useERPStore((state) => state.groups);
+    const courses = useERPStore((state) => state.courses);
+    const statuses = useERPStore((state) => state.statuses);
     const updateGroup = useERPStore((state) => state.updateGroup);
-    const courses = useCourses();
 
     const ganttTasks = useMemo(() => {
         return groups.map(group => {
             const course = courses.find(c => c.id === group.courseId);
+
+            const start = new Date(group.startDate);
+            const end = new Date(group.endDate);
+            const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
             return {
                 id: group.id,
-                text: course?.name || 'Неизвестный курс',
-                start: new Date(group.startDate),
-                end: new Date(group.endDate),
-                progress: group.averageProgress,
-                color: getStatusColor(group.status),
+                text: course?.name || `Курс ${group.courseId}`,
+                start: start,
+                end: end,
+                duration: duration,
+                progress: group.averageProgress / 100,
+                color: getStatusColor(group.status || 'Планируется'),
+                statusName: group.status || 'Неизвестно',
+                participantCount: group.participantCount,
+                totalCost: group.totalCost,
             };
         });
-    }, [groups, courses]);
+    }, [groups, courses, statuses]);
 
-    const handleTaskUpdate = (updatedTask: any) => {
-        updateGroup(updatedTask.id, {
-            startDate: updatedTask.start,
-            endDate: updatedTask.end,
+    const handleTaskUpdate = async (updatedTask: any) => {
+        await updateGroup(updatedTask.id, {
+            dateBegin: updatedTask.start.toISOString(),
+            dateEnd: updatedTask.end.toISOString(),
         });
+        const fetchAllData = useERPStore.getState().fetchAllData;
+        await fetchAllData();
     };
 
     const handleScaleChange = () => {
         setScaleIndex((prev) => (prev + 1) % scales.length);
     };
 
+    const handleTaskClick = (task: any) => {
+        console.log('Группа выбрана:', {
+            id: task.id,
+            name: task.text,
+            start: task.start,
+            end: task.end,
+            progress: task.progress * 100,
+            status: task.statusName,
+            participants: task.participantCount,
+            cost: task.totalCost,
+        });
+    };
+
+    if (ganttTasks.length === 0) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
+                Нет учебных групп для отображения на диаграмме Ганта
+            </div>
+        );
+    }
+
     return (
         <div className="bg-white rounded-lg shadow-sm p-4 max-w-full">
             <div className="flex justify-between items-center mb-4">
                 <div>
-                    <h2 className="text-lg font-semibold text-gray-800">
-                         План обучения
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                        План обучения
                     </h2>
                     <p className="text-sm text-gray-500 mt-1">
                         Отображение {groups.length} учебных групп на временной шкале
@@ -81,42 +124,34 @@ export function TrainingGantt() {
                             columns={columns}
                             scales={[scales[scaleIndex]]}
                             onTaskUpdate={handleTaskUpdate}
-                            onTaskClick={(task) => {
-                                console.log('Группа выбрана:', task);
-                            }}
+                            onTaskClick={handleTaskClick}
                         />
                     </ContextMenu>
                 </Locale>
             </div>
 
-            <div className="mt-4 flex gap-4 text-sm border-t pt-4">
+            <div className="mt-4 flex flex-wrap gap-4 text-sm border-t pt-4">
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-blue-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
                     <span>Планируется</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                     <span>В процессе</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-green-500"></div>
-                    <span>Завершено</span>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span>Завершён</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded bg-red-500"></div>
-                    <span>Отменено</span>
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span>Отменён</span>
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                    <div className="w-3 h-3 rounded bg-gray-200"></div>
+                    <span>Прогресс</span>
                 </div>
             </div>
         </div>
     );
-}
-
-function getStatusColor(status: string): string {
-    const colors: Record<string, string> = {
-        planned: '#3b82f6',
-        in_progress: '#f59e0b',
-        completed: '#22c55e',
-        cancelled: '#ef4444',
-    };
-    return colors[status] || '#6b7280';
 }

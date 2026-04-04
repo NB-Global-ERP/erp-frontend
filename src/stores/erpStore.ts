@@ -5,7 +5,8 @@ import type {
     Employee,
     TrainingGroup,
     Specification,
-    Company, Status
+    Company, Status,
+    AnalyticsState
 } from '@/types/erp.types';
 import type {
     CourseRequest,
@@ -28,10 +29,15 @@ interface ERPState {
     specifications: Specification[];
     statuses: Status[];
 
+    analytics: AnalyticsState;
+
     isLoading: boolean;
     error: string | null;
 
     fetchAllData: () => Promise<void>;
+
+    fetchCourseAnalytics: () => Promise<void>;
+    fetchAllAnalytics: () => Promise<void>;
 
     addCourse: (data: CourseRequest) => Promise<void>;
     updateCourse: (id: number, data: CoursePatchRequest) => Promise<void>;
@@ -44,6 +50,7 @@ interface ERPState {
     addGroup: (data: GroupRequest) => Promise<void>;
     updateGroup: (id: number, data: GroupPatchRequest) => Promise<void>;
     deleteGroup: (id: number) => Promise<void>;
+    addStudentToGroup: (groupId: number, studentId: number) => Promise<void>;
 
     addSpecification: (data: SpecificationRequest) => Promise<void>;
     updateSpecification: (id: number, data: SpecificationPatchRequest) => Promise<void>;
@@ -58,7 +65,7 @@ interface ERPState {
     deleteStatus: (id: number) => Promise<void>;
 }
 
-export const useERPStore = create<ERPState>((set) => ({
+export const useERPStore = create<ERPState>((set, get) => ({
 
     courses: [],
     employees: [],
@@ -66,6 +73,21 @@ export const useERPStore = create<ERPState>((set) => ({
     groups: [],
     specifications: [],
     statuses: [],
+
+    analytics: {
+        courseTotalDuration: 0,
+        courseMinDuration: 0,
+        courseMaxDuration: 0,
+        courseCount: 0,
+        courseAvgDuration: 0,
+        courseBasicStats: null,
+        totalCompanies: 0,
+        totalEmployees: 0,
+        totalGroups: 0,
+        totalSpecifications: 0,
+        averageGroupProgress: 0,
+        totalRevenue: 0,
+    },
 
     isLoading: false,
     error: null,
@@ -99,6 +121,101 @@ export const useERPStore = create<ERPState>((set) => ({
                 error: (e as Error).message,
                 isLoading: false,
             });
+        }
+    },
+
+    fetchCourseAnalytics: async () => {
+        try {
+            const [
+                totalDuration,
+                minDuration,
+                maxDuration,
+                count,
+                avgDuration,
+                basicStats
+            ] = await Promise.all([
+                api.getCoursesTotalDuration(),
+                api.getCoursesMinDuration(),
+                api.getCoursesMaxDuration(),
+                api.getCoursesCount(),
+                api.getCoursesAvgDuration(),
+                api.getCoursesBasicStats(),
+            ]);
+
+            set((state) => ({
+                analytics: {
+                    ...state.analytics,
+                    courseTotalDuration: totalDuration,
+                    courseMinDuration: minDuration,
+                    courseMaxDuration: maxDuration,
+                    courseCount: count,
+                    courseAvgDuration: avgDuration,
+                    courseBasicStats: basicStats,
+                }
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    fetchAllAnalytics: async () => {
+        set({ isLoading: true });
+
+        try {
+            const [
+                courseTotalDuration,
+                courseMinDuration,
+                courseMaxDuration,
+                courseCount,
+                courseAvgDuration,
+                courseBasicStats,
+                totalCompanies,
+                totalEmployeesCount,
+            ] = await Promise.all([
+                api.getCoursesTotalDuration(),
+                api.getCoursesMinDuration(),
+                api.getCoursesMaxDuration(),
+                api.getCoursesCount(),
+                api.getCoursesAvgDuration(),
+                api.getCoursesBasicStats(),
+                api.getCompaniesCount(),
+                api.getEmployees().then(emps => emps.length),
+            ]);
+
+            const { groups } = get();
+
+            const totalGroups = groups.length;
+            const totalSpecifications = get().specifications.length;
+            const averageGroupProgress = groups.length > 0
+                ? Math.round(groups.reduce((sum, g) => sum + g.averageProgress, 0) / groups.length)
+                : 0;
+            const totalRevenue = groups.reduce((sum, g) => sum + g.totalCost, 0);
+
+            set((state) => ({
+                analytics: {
+                    ...state.analytics,
+                    courseTotalDuration,
+                    courseMinDuration,
+                    courseMaxDuration,
+                    courseCount,
+                    courseAvgDuration,
+                    courseBasicStats,
+                    totalCompanies,
+                    totalEmployees: totalEmployeesCount,
+                    totalGroups,
+                    totalSpecifications,
+                    averageGroupProgress,
+                    totalRevenue,
+                },
+                isLoading: false,
+            }));
+        } catch (e) {
+            set({
+                error: (e as Error).message,
+                isLoading: false
+            });
+            throw e;
         }
     },
 
@@ -218,6 +335,19 @@ export const useERPStore = create<ERPState>((set) => ({
             set((state) => ({
                 groups: state.groups.filter(g => g.id !== id),
             }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    addStudentToGroup: async (groupId, studentId) => {
+        try {
+            await api.addStudentToGroup(groupId, studentId);
+            const groups = await api.getGroups();
+            set({ groups });
+
+            await get().fetchAllAnalytics();
         } catch (e) {
             set({ error: (e as Error).message });
             throw e;

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-type TabType = 'dashboard' | 'groups' | 'gantt' | 'specifications' | 'courses' | 'employees' | 'settings';
+type TabType = 'dashboard' | 'groups' | 'gantt' | 'specifications' | 'courses' | 'employees' | 'settings' | 'companies';
 
 interface UIState {
     sidebarOpen: boolean;

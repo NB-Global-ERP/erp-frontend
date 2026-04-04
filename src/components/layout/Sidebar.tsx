@@ -5,7 +5,7 @@ import { cn } from '@/utils/formatters';
 const menuItems = [
     { icon: Home, label: 'Дашборд', key: 'dashboard' },
     { icon: Calendar, label: 'Планирование', key: 'gantt' },
-    { icon: Users, label: 'Сотрудники', key: 'employees' },
+    { icon: Users, label: 'Группы', key: 'groups' },
 ];
 
 export function Sidebar() {

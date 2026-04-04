@@ -11,7 +11,7 @@ import type {
     Employee,
     Course,
     TrainingGroup,
-    Specification, Statuses
+    Specification, Status
 } from '@/types/erp.types';
 
 export const mapCompany = (c: CompanyResponse): Company => ({
@@ -42,6 +42,7 @@ export const mapGroup = (g: GroupResponse): TrainingGroup => ({
     endDate: new Date(g.dateEnd),
     pricePerPerson: Number(g.pricePerPerson),
     participantCount: g.participantCount,
+    status: g.courseCompletion,
     totalCost: Number(g.groupPrice),
     averageProgress: g.averageProgress,
     specificationId: g.specificationId,
@@ -57,7 +58,7 @@ export const mapSpecification = (s: SpecificationResponse): Specification => ({
     totalWithVat: Number(s.totalAmountIncludingVat),
 });
 
-export const mapStatuses = (s: CourseCompletionStatusResponse): Statuses => ({
+export const mapStatuses = (s: CourseCompletionStatusResponse): Status => ({
     id: s.id,
     name: s.name,
 });

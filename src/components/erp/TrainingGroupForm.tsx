@@ -5,20 +5,21 @@ import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
 import { GroupParticipants } from './GroupParticipants';
 import { X } from 'lucide-react';
-import {STATUS_OPTIONS} from "@/utils/constants.ts";
+import {TIME} from "@/utils/constants.ts";
 
 const groupSchema = z.object({
-    dateBegin: z.string('Укажите дату начала'),
-    dateEnd: z.string('Укажите дату окончания'),
-    pricePerPerson: z.number().min(0),
-    courseCompletionId: z.number(),
-    specificationId: z.number('Укажите спецификацию'),
+    courseId: z.number().min(1, 'Выберите курс'),
+    dateBegin: z.string().min(1, 'Укажите дату начала'),
+    dateEnd: z.string().min(1, 'Укажите дату окончания'),
+    pricePerPerson: z.number().min(0, 'Цена не может быть отрицательной'),
+    courseCompletionId: z.number().min(1, 'Выберите статус'),
+    specificationId: z.number().min(1, 'Выберите спецификацию'),
 });
 
 type GroupFormData = z.infer<typeof groupSchema>;
 
 interface TrainingGroupFormProps {
-    groupId?: string | null;
+    groupId?: number | null;
     onClose: () => void;
     onSave: () => void;
 }
@@ -28,52 +29,42 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
 
     const courses = useERPStore((state) => state.courses);
     const groups = useERPStore((state) => state.groups);
+    const specifications = useERPStore((state) => state.specifications);
+    const statuses = useERPStore((state) => state.statuses);
     const addGroup = useERPStore((state) => state.addGroup);
     const updateGroup = useERPStore((state) => state.updateGroup);
 
     const existingGroup = groupId ? groups.find(g => g.id === groupId) : null;
 
+    const getStatusIdByName = (statusName: string) => {
+        const status = statuses.find(s => s.name === statusName);
+        return status?.id || 1;
+    };
+
     const { register, handleSubmit, formState: { errors } } = useForm<GroupFormData>({
         resolver: zodResolver(groupSchema),
         defaultValues: existingGroup ? {
             courseId: existingGroup.courseId,
-            name: existingGroup.name,
-            startDate: existingGroup.startDate.toISOString().split('T')[0],
-            endDate: existingGroup.endDate.toISOString().split('T')[0],
-            status: existingGroup.status,
+            dateBegin: existingGroup.startDate.toISOString().split('T')[0],
+            dateEnd: existingGroup.endDate.toISOString().split('T')[0],
+            pricePerPerson: existingGroup.pricePerPerson,
+            courseCompletionId: getStatusIdByName(existingGroup.status),
+            specificationId: existingGroup.specificationId,
         } : {
-            courseId: '',
-            name: '',
-            startDate: new Date().toISOString().split('T')[0],
-            endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            status: 'planned',
+            courseId: undefined,
+            dateBegin: new Date().toISOString().split('T')[0],
+            dateEnd: new Date(Date.now() + TIME.WEEK).toISOString().split('T')[0],
+            pricePerPerson: 0,
+            courseCompletionId: 1,
+            specificationId: undefined,
         },
     });
 
-    const onSubmit = (data: GroupFormData) => {
-        const selectedCourse = courses.find(c => c.id === data.courseId);
-
+    const onSubmit = async (data: GroupFormData) => {
         if (groupId) {
-            updateGroup(groupId, {
-                courseId: data.courseId,
-                name: data.name,
-                startDate: new Date(data.startDate),
-                endDate: new Date(data.endDate),
-                status: data.status,
-                pricePerPerson: selectedCourse?.pricePerPerson || 0,
-            });
+            await updateGroup(groupId, data);
         } else {
-            addGroup({
-                id: Date.now().toString(),
-                name: data.name,
-                courseId: data.courseId,
-                startDate: new Date(data.startDate),
-                endDate: new Date(data.endDate),
-                status: data.status,
-                pricePerPerson: selectedCourse?.pricePerPerson || 0,
-                specificationId: undefined,
-                participants: [],
-            });
+            await addGroup(data);
         }
         onSave();
     };
@@ -118,27 +109,16 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Название группы *
-                                </label>
-                                <input
-                                    {...register('name')}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                />
-                                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Курс обучения *
                                 </label>
                                 <select
-                                    {...register('courseId')}
-                                    className="w-full px-3 py-2 rounded-lg focus:outline-none"
+                                    {...register('courseId', { valueAsNumber: true })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 >
                                     <option value="">Выберите курс</option>
                                     {courses.map(course => (
-                                        <option className="py-1 text-gray-900 bg-white hover:bg-primary-50"
-                                                key={course.id} value={course.id}>
-                                            {course.name} ({course.pricePerPerson.toLocaleString('ru-RU')} ₽/чел)
+                                        <option key={course.id} value={course.id}>
+                                            {course.name} ({course.price.toLocaleString('ru-RU')} ₽/чел)
                                         </option>
                                     ))}
                                 </select>
@@ -154,11 +134,11 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                     </label>
                                     <input
                                         type="date"
-                                        {...register('startDate')}
+                                        {...register('dateBegin')}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                                     />
-                                    {errors.startDate && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.startDate.message}</p>
+                                    {errors.dateBegin && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dateBegin.message}</p>
                                     )}
                                 </div>
                                 <div>
@@ -167,26 +147,61 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                                     </label>
                                     <input
                                         type="date"
-                                        {...register('endDate')}
+                                        {...register('dateEnd')}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                                     />
-                                    {errors.endDate && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.endDate.message}</p>
+                                    {errors.dateEnd && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dateEnd.message}</p>
                                     )}
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Статус
+                                    Цена за человека, ₽ *
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    {...register('pricePerPerson', { valueAsNumber: true })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                />
+                                {errors.pricePerPerson && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.pricePerPerson.message}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Статус *
                                 </label>
                                 <select
-                                    {...register('status')}
-                                    className="w-full px-3 py-2 rounded-lg focus:outline-none"
+                                    {...register('courseCompletionId', { valueAsNumber: true })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 >
-                                    {STATUS_OPTIONS.map(status => (
+                                    {statuses.map(status => (
                                         <option key={status.id} value={status.id}>
-                                            {status.label}
+                                            {status.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.courseCompletionId && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.courseCompletionId.message}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Спецификация *
+                                </label>
+                                <select
+                                    {...register('specificationId', { valueAsNumber: true })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                >
+                                    <option value="">Без спецификации</option>
+                                    {specifications.map(spec => (
+                                        <option key={spec.id} value={spec.id}>
+                                            Спецификация №{spec.number} от {spec.date.toLocaleDateString('ru-RU')}
                                         </option>
                                     ))}
                                 </select>
@@ -211,7 +226,7 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                     )}
 
                     {activeTab === 'participants' && groupId && (
-                        <GroupParticipants groupId={groupId}/>
+                        <GroupParticipants groupId={groupId} />
                     )}
 
                     {activeTab === 'participants' && !groupId && (

@@ -1,3 +1,5 @@
+import type {CourseBasicStats} from "@/types/api.types.ts";
+
 export interface Company {
     id: number;
     code: string;
@@ -26,6 +28,7 @@ export interface TrainingGroup {
     endDate: Date;
     pricePerPerson: number;
     participantCount: number;
+    status: string;
     totalCost: number;
     averageProgress: number;
     specificationId?: number;
@@ -44,4 +47,20 @@ export interface Specification {
 export interface Status {
     id: number;
     name: string;
+}
+
+export interface AnalyticsState {
+    courseTotalDuration: number;
+    courseMinDuration: number;
+    courseMaxDuration: number;
+    courseCount: number;
+    courseAvgDuration: number;
+    courseBasicStats: CourseBasicStats | null;
+
+    totalCompanies: number;
+    totalEmployees: number;
+    totalGroups: number;
+    totalSpecifications: number;
+    averageGroupProgress: number;
+    totalRevenue: number;
 }

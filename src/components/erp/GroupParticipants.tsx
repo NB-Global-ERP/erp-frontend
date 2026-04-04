@@ -6,7 +6,7 @@ import ru from "@/utils/ru.ts";
 import {Locale} from "@svar-ui/react-core";
 
 interface GroupParticipantsProps {
-    groupId: string;
+    groupId: number;
 }
 
 export function GroupParticipants({ groupId }: GroupParticipantsProps) {

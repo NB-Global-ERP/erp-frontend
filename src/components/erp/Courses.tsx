@@ -29,7 +29,7 @@ export function Courses() {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Справочник курсов</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">Справочник курсов</h2>
                 <button
                     onClick={() => {
                         setSelectedCourseId(null);
