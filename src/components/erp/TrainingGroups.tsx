@@ -5,7 +5,6 @@ import { Locale } from '@svar-ui/react-core';
 import { TrainingGroupForm } from './TrainingGroupForm';
 import { formatCurrency } from '@/utils/formatters';
 import ru from '@/utils/ru';
-import {useCourses} from "@/hooks/useCourses.ts";
 import {useGroups} from "@/hooks/useGroups.ts";
 
 export function TrainingGroups() {
@@ -15,12 +14,10 @@ export function TrainingGroups() {
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
     const { groups, isLoading } = useGroups();
-    const courses = useCourses();
 
     const columns = [
         { id: 'id', header: 'ID', width: 80 },
-        { id: 'courseId', header: 'Курс', width: 180,
-            template: (value: number) => courses.find(c => c.id === value)?.name || '—'},
+        { id: 'courseName', header: 'Курс', width: 180},
         { id: 'startDate', header: 'Дата начала', width: 120,
             template: (value: Date | string) => value ? new Date(value).toLocaleDateString('ru-RU') : '—'},
         { id: 'endDate', header: 'Дата окончания', width: 120,
