@@ -27,7 +27,7 @@ export function Specifications() {
             id: 'date',
             header: 'Дата',
             width: 120,
-            template: (value: string) => value || '—'
+            template: (value: Date | string) => value ? new Date(value).toLocaleDateString('ru-RU') : '—'
         },
         {
             id: 'companyName',
