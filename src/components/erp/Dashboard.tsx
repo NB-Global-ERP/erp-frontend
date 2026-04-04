@@ -91,7 +91,7 @@ export function Dashboard() {
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-sm text-gray-600">Средняя длительность курса</span>
-                            <span className="font-semibold text-gray-900">{basicStats?.avgDuration || 0} дней</span>
+                            <span className="font-semibold text-gray-900">{basicStats?.avgDuration.toFixed(1) || 0} дней</span>
                         </div>
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-sm text-gray-600">Самый короткий курс</span>
