@@ -3,6 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
 import { X } from 'lucide-react';
+import type {Course} from "@/types/erp.types.ts";
+import {useState} from "react";
 
 const courseSchema = z.object({
     name: z.string().min(1, 'Введите название'),
@@ -14,27 +16,29 @@ const courseSchema = z.object({
 type CourseFormData = z.infer<typeof courseSchema>;
 
 interface CourseFormProps {
-    courseId?: number | null;
+    course?: Course | null;
     onClose: () => void;
     onSave: () => void;
 }
 
-export function CourseForm({ courseId, onClose, onSave }: CourseFormProps) {
-    const courses = useERPStore((state) => state.courses);
+export function CourseForm({ course, onClose, onSave }: CourseFormProps) {
+    const [showConfirm, setShowConfirm] = useState(false);
+
     const addCourse = useERPStore((state) => state.addCourse);
     const updateCourse = useERPStore((state) => state.updateCourse);
+    const deleteCourse = useERPStore((state) => state.deleteCourse);
 
-    const existingCourse = courseId ? courses.find(c => c.id === courseId) : null;
+    const isEditing = !!course;
 
     const { register, handleSubmit, formState: { errors } } =
         useForm<CourseFormData>({
             resolver: zodResolver(courseSchema),
-            defaultValues: existingCourse
+            defaultValues: course
                 ? {
-                    name: existingCourse.name,
-                    description: existingCourse.description,
-                    durationInDays: existingCourse.durationDays,
-                    pricePerPerson: existingCourse.price,
+                    name: course.name,
+                    description: course.description,
+                    durationInDays: course.durationDays,
+                    pricePerPerson: course.price,
                 }
                 : {
                     name: '',
@@ -45,92 +49,147 @@ export function CourseForm({ courseId, onClose, onSave }: CourseFormProps) {
         });
 
     const onSubmit = async (data: CourseFormData) => {
-        if (courseId) {
-            await updateCourse(courseId, data);
+        if (isEditing && course) {
+            await updateCourse(course.id, data);
         } else {
             await addCourse(data);
         }
         onSave();
     };
 
+    const handleDeleteClick = () => {
+        setShowConfirm(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (course) {
+            await deleteCourse(course.id);
+            setShowConfirm(false);
+            onSave();
+        }
+    };
+
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-                <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                        {courseId ? 'Редактирование курса' : 'Новый курс'}
-                    </h2>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg">
-                        <X className="w-5 h-5 text-gray-500" />
-                    </button>
+        <>
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+                    <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-800">
+                            {isEditing ? 'Редактирование курса' : 'Новый курс'}
+                        </h2>
+                        <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg">
+                            <X className="w-5 h-5 text-gray-500"/>
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Название курса *
+                            </label>
+                            <input
+                                {...register('name')}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            />
+                            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Описание
+                            </label>
+                            <textarea
+                                {...register('description')}
+                                rows={3}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Длительность (дни) *
+                                </label>
+                                <input
+                                    type="number"
+                                    {...register('durationInDays', {valueAsNumber: true})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                />
+                                {errors.durationInDays &&
+                                    <p className="mt-1 text-sm text-red-600">{errors.durationInDays.message}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Цена за чел., ₽ *
+                                </label>
+                                <input
+                                    type="number"
+                                    {...register('pricePerPerson', {valueAsNumber: true})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                />
+                                {errors.pricePerPerson &&
+                                    <p className="mt-1 text-sm text-red-600">{errors.pricePerPerson.message}</p>}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between gap-3 pt-4">
+                            {isEditing &&
+                                <div>
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteClick}
+                                        className="px-4 py-2 border border-danger text-danger rounded-lg hover:bg-danger hover:text-white transition-colors"
+                                    >
+                                        Удалить
+                                    </button>
+                                </div>
+                            }
+                            <div className="flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                >
+                                    Отмена
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                                >
+                                    {isEditing ? 'Сохранить' : 'Создать'}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Название курса *
-                        </label>
-                        <input
-                            {...register('name')}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        />
-                        {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Описание
-                        </label>
-                        <textarea
-                            {...register('description')}
-                            rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Длительность (дни) *
-                            </label>
-                            <input
-                                type="number"
-                                {...register('durationInDays', { valueAsNumber: true })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            />
-                            {errors.durationInDays && <p className="mt-1 text-sm text-red-600">{errors.durationInDays.message}</p>}
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Цена за чел., ₽ *
-                            </label>
-                            <input
-                                type="number"
-                                {...register('pricePerPerson', { valueAsNumber: true })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            />
-                            {errors.pricePerPerson && <p className="mt-1 text-sm text-red-600">{errors.pricePerPerson.message}</p>}
-                        </div>
-                    </div>
-
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        >
-                            Отмена
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-                        >
-                            {courseId ? 'Сохранить' : 'Создать'}
-                        </button>
-                    </div>
-                </form>
             </div>
-        </div>
+            {showConfirm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            Подтверждение удаления
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            Вы уверены, что хотите удалить курс?
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowConfirm(false)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                            >
+                            Отмена
+                            </button>
+                            <button
+                                onClick={handleConfirmDelete}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            >
+                                Удалить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

@@ -155,7 +155,6 @@ export function CompanyForm({ company, onClose, onSave }: CompanyFormProps) {
                         </h3>
                         <p className="text-gray-600 mb-6">
                             Вы уверены, что хотите удалить компанию "{company?.name}"?
-                            Это действие нельзя отменить.
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
