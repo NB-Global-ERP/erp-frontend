@@ -55,6 +55,7 @@ export const deleteCourse = async (id: number): Promise<void> =>
 
 export const getCoursesCount = async (): Promise<number> => {
     const response = await raw.getCoursesCountRaw();
+    console.log(response, response.count);
     return response.count;
 };
 
