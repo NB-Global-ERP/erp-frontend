@@ -40,3 +40,8 @@ export interface Specification {
     vatAmount: number;
     totalWithVat: number;
 }
+
+export interface Status {
+    id: number;
+    name: string;
+}

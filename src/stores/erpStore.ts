@@ -5,7 +5,7 @@ import type {
     Employee,
     TrainingGroup,
     Specification,
-    Company
+    Company, Status
 } from '@/types/erp.types';
 import type {
     CourseRequest,
@@ -17,7 +17,7 @@ import type {
     SpecificationRequest,
     SpecificationPatchRequest,
     CompanyRequest,
-    CompanyPatchRequest
+    CompanyPatchRequest, CourseCompletionStatusPatchRequest, CourseCompletionStatusRequest
 } from '@/types/api.types';
 
 interface ERPState {
@@ -26,6 +26,7 @@ interface ERPState {
     companies: Company[];
     groups: TrainingGroup[];
     specifications: Specification[];
+    statuses: Status[];
 
     isLoading: boolean;
     error: string | null;
@@ -51,6 +52,10 @@ interface ERPState {
     addCompany: (data: CompanyRequest) => Promise<void>;
     updateCompany: (id: number, data: CompanyPatchRequest) => Promise<void>;
     deleteCompany: (id: number) => Promise<void>;
+
+    addStatus: (data: CourseCompletionStatusRequest) => Promise<void>;
+    updateStatus: (id: number, data: CourseCompletionStatusPatchRequest) => Promise<void>;
+    deleteStatus: (id: number) => Promise<void>;
 }
 
 export const useERPStore = create<ERPState>((set) => ({
@@ -60,6 +65,7 @@ export const useERPStore = create<ERPState>((set) => ({
     companies: [],
     groups: [],
     specifications: [],
+    statuses: [],
 
     isLoading: false,
     error: null,
@@ -68,13 +74,14 @@ export const useERPStore = create<ERPState>((set) => ({
         set({ isLoading: true, error: null });
 
         try {
-            const [courses, employees, groups, specifications, companies] =
+            const [courses, employees, groups, specifications, companies, statuses] =
                 await Promise.all([
                     api.getCourses(),
                     api.getEmployees(),
                     api.getGroups(),
                     api.getSpecifications(),
                     api.getCompanies(),
+                    api.getStatuses(),
                 ]);
 
             set({
@@ -83,6 +90,7 @@ export const useERPStore = create<ERPState>((set) => ({
                 groups,
                 specifications,
                 companies,
+                statuses,
                 isLoading: false,
             });
 
@@ -296,4 +304,45 @@ export const useERPStore = create<ERPState>((set) => ({
         }
     },
 
+    addStatus: async (data) => {
+        try {
+            const { id } = await api.createStatus(data);
+            const created = await api.getStatus(id);
+
+            set((state) => ({
+                statuses: [...state.statuses, created],
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    updateStatus: async (id, data) => {
+        try {
+            const updated = await api.updateStatus(id, data);
+
+            set((state) => ({
+                statuses: state.statuses.map(s =>
+                    s.id === id ? updated : s
+                ),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    deleteStatus: async (id) => {
+        try {
+            await api.deleteStatus(id);
+
+            set((state) => ({
+                statuses: state.statuses.filter(s => s.id !== id),
+            }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
 }));

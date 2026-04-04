@@ -4,7 +4,8 @@ import {
     mapEmployee,
     mapGroup,
     mapSpecification,
-    mapCompany
+    mapCompany,
+    mapStatuses
 } from '@/utils/adapters';
 
 import type {
@@ -12,7 +13,7 @@ import type {
     Employee,
     TrainingGroup,
     Specification,
-    Company
+    Company, Status
 } from '@/types/erp.types';
 
 import type {
@@ -26,7 +27,10 @@ import type {
     SpecificationPatchRequest,
     CompanyRequest,
     CompanyPatchRequest,
-    CreateResponse
+    CourseCompletionStatusRequest,
+    CourseCompletionStatusPatchRequest,
+    CreateResponse,
+    CourseBasicStats
 } from '@/types/api.types';
 
 export const getCourses = async (): Promise<Course[]> =>
@@ -49,18 +53,34 @@ export const updateCourse = async (
 export const deleteCourse = async (id: number): Promise<void> =>
     raw.deleteCourseRaw(id);
 
+export const getCoursesTotalDuration = async (): Promise<number> =>
+    raw.getCoursesTotalDurationRaw();
+
+export const getCoursesMinDuration = async (): Promise<number> =>
+    raw.getCoursesMinDurationRaw();
+
+export const getCoursesMaxDuration = async (): Promise<number> =>
+    raw.getCoursesMaxDurationRaw();
+
+export const getCoursesCount = async (): Promise<number> =>
+    raw.getCoursesCountRaw();
+
+export const getCoursesAvgDuration = async (): Promise<number> =>
+    raw.getCoursesAvgDurationRaw();
+
+export const getCoursesBasicStats = async (): Promise<CourseBasicStats> =>
+    raw.getCoursesBasicStatsRaw();
+
 export const getEmployees = async (): Promise<Employee[]> =>
     (await raw.getStudentsRaw()).map(mapEmployee);
 
-export const createEmployee = async (
-    data: StudentRequest
-): Promise<CreateResponse> =>
+export const getEmployee = async (id: number): Promise<Employee> =>
+    mapEmployee(await raw.getStudentRaw(id));
+
+export const createEmployee = async (data: StudentRequest): Promise<CreateResponse> =>
     raw.createStudentRaw(data);
 
-export const updateEmployee = async (
-    id: number,
-    data: StudentPatchRequest
-): Promise<Employee> =>
+export const updateEmployee = async (id: number, data: StudentPatchRequest): Promise<Employee> =>
     mapEmployee(await raw.updateStudentRaw(id, data));
 
 export const deleteEmployee = async (id: number): Promise<void> =>
@@ -69,15 +89,13 @@ export const deleteEmployee = async (id: number): Promise<void> =>
 export const getGroups = async (): Promise<TrainingGroup[]> =>
     (await raw.getGroupsRaw()).map(mapGroup);
 
-export const createGroup = async (
-    data: GroupRequest
-): Promise<CreateResponse> =>
+export const getGroup = async (id: number): Promise<TrainingGroup> =>
+    mapGroup(await raw.getGroupRaw(id));
+
+export const createGroup = async (data: GroupRequest): Promise<CreateResponse> =>
     raw.createGroupRaw(data);
 
-export const updateGroup = async (
-    id: number,
-    data: GroupPatchRequest
-): Promise<TrainingGroup> =>
+export const updateGroup = async (id: number, data: GroupPatchRequest): Promise<TrainingGroup> =>
     mapGroup(await raw.updateGroupRaw(id, data));
 
 export const deleteGroup = async (id: number): Promise<void> =>
@@ -92,32 +110,51 @@ export const addStudentToGroup = async (
 export const getSpecifications = async (): Promise<Specification[]> =>
     (await raw.getSpecificationsRaw()).map(mapSpecification);
 
-export const createSpecification = async (
-    data: SpecificationRequest
-): Promise<CreateResponse> =>
+export const getSpecification = async (id: number): Promise<Specification> =>
+    mapSpecification(await raw.getSpecificationRaw(id));
+
+export const createSpecification = async (data: SpecificationRequest): Promise<CreateResponse> =>
     raw.createSpecificationRaw(data);
 
-export const updateSpecification = async (
-    id: number,
-    data: SpecificationPatchRequest
-): Promise<Specification> =>
+export const updateSpecification = async (id: number, data: SpecificationPatchRequest): Promise<Specification> =>
     mapSpecification(await raw.updateSpecificationRaw(id, data));
 
 export const deleteSpecification = async (id: number): Promise<void> =>
     raw.deleteSpecificationRaw(id);
 
-export const getCompanies = async (): Promise<Company[]> =>
-    (await raw.getCompaniesRaw()).map(mapCompany);
+export const getStatuses = async (): Promise<Status[]> =>
+    (await raw.getCourseCompletionStatusesListRaw()).map(mapStatuses);
 
-export const createCompany = async (
-    data: CompanyRequest
+export const getStatus = async (id: number): Promise<Status> =>
+    mapStatuses(await raw.getCourseCompletionStatusRaw(id));
+
+export const createStatus = async (
+    data: CourseCompletionStatusRequest
 ): Promise<CreateResponse> =>
+    raw.createCourseCompletionStatusRaw(data);
+
+export const updateStatus = async (
+    id: number,
+    data: CourseCompletionStatusPatchRequest
+): Promise<Status> =>
+    mapStatuses(await raw.updateCourseCompletionStatusRaw(id, data));
+
+export const deleteStatus = async (id: number): Promise<void> =>
+    raw.deleteCourseCompletionStatusRaw(id);
+
+export const getCompanies = async (): Promise<Company[]> =>
+    (await raw.getCompaniesListRaw()).map(mapCompany);
+
+export const getCompaniesCount = async (): Promise<number> =>
+    raw.getCompaniesCountRaw();
+
+export const getCompany = async (id: number): Promise<Company> =>
+    mapCompany(await raw.getCompanyRaw(id));
+
+export const createCompany = async (data: CompanyRequest): Promise<CreateResponse> =>
     raw.createCompanyRaw(data);
 
-export const updateCompany = async (
-    id: number,
-    data: CompanyPatchRequest
-): Promise<Company> =>
+export const updateCompany = async (id: number, data: CompanyPatchRequest): Promise<Company> =>
     mapCompany(await raw.updateCompanyRaw(id, data));
 
 export const deleteCompany = async (id: number): Promise<void> =>

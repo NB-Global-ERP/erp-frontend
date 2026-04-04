@@ -132,3 +132,24 @@ export interface CompanyPatchRequest {
     companyCode?: string;
     companyName?: string;
 }
+
+export interface CourseCompletionStatusResponse {
+    id: number;
+    name: string;  // "Планируется", "В процессе", "Завершён", "Отменён"
+}
+
+export interface CourseCompletionStatusRequest {
+    name: string;
+}
+
+export interface CourseCompletionStatusPatchRequest {
+    name?: string;
+}
+
+export interface CourseBasicStats {
+    totalDuration: number;
+    minDuration: number;
+    maxDuration: number;
+    avgDuration: number;
+    count: number;
+}

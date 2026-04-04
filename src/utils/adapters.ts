@@ -3,7 +3,7 @@ import type {
     StudentResponse,
     CourseResponse,
     GroupResponse,
-    SpecificationResponse
+    SpecificationResponse, CourseCompletionStatusResponse
 } from '@/types/api.types';
 
 import type {
@@ -11,7 +11,7 @@ import type {
     Employee,
     Course,
     TrainingGroup,
-    Specification
+    Specification, Statuses
 } from '@/types/erp.types';
 
 export const mapCompany = (c: CompanyResponse): Company => ({
@@ -55,4 +55,9 @@ export const mapSpecification = (s: SpecificationResponse): Specification => ({
     totalAmount: Number(s.totalAmountExcludingVat),
     vatAmount: Number(s.vatAmount22Percent),
     totalWithVat: Number(s.totalAmountIncludingVat),
+});
+
+export const mapStatuses = (s: CourseCompletionStatusResponse): Statuses => ({
+    id: s.id,
+    name: s.name,
 });
