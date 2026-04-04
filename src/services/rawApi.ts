@@ -60,7 +60,7 @@ export const getCoursesCountRaw = (): Promise<number> =>
     apiClient.get('/courses/analytics/count');
 
 export const getCoursesBasicStatsRaw = (): Promise<CourseBasicStatsResponse> =>
-    apiClient.get('/courses/analytics/basicStats');
+    apiClient.get('/courses/analytics/basicStats/dayDuration');
 
 export const getStudentsRaw = (): Promise<StudentResponse[]> =>
     apiClient.get('/students');
@@ -105,7 +105,7 @@ export const getSpecificationRaw = (id: number): Promise<SpecificationResponse> 
     apiClient.get('/specifications', { params: { id } });
 
 export const createSpecificationRaw = (data: SpecificationRequest): Promise<CreateResponse> =>
-    apiClient.post('/specifications', data);
+    apiClient.post('/specifications/list', data);
 
 export const updateSpecificationRaw = (id: number, data: SpecificationPatchRequest): Promise<SpecificationResponse> =>
     apiClient.patch('/specifications', data, { params: { id } });
