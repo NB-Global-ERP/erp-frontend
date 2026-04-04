@@ -12,7 +12,7 @@ RUN yarn install
 
 COPY . ./
 
-RUN yarn build --noEmit || true
+RUN yarn build --noEmit  --skipLibCheck
 
 FROM node:20-alpine AS production
 
