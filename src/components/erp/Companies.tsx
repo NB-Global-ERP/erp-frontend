@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ContextMenu, Grid, HeaderMenu, Toolbar } from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu, type IApi, type IFilterValues } from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { CompanyForm } from './CompanyForm';
 import { Plus } from 'lucide-react';
@@ -9,7 +9,8 @@ import { Locale } from "@svar-ui/react-core";
 export function Companies() {
     const [showForm, setShowForm] = useState(false);
     const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
-    const [api, setApi] = useState(null);
+    const [api, setApi] = useState<IApi>();
+    const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
     const companies = useERPStore((state) => state.companies);
     const employees = useERPStore((state) => state.employees);
@@ -42,37 +43,13 @@ export function Companies() {
             id: 'employeesCount',
             header: 'Сотрудников',
             width: 120,
-            template: (value: number) => value || 0
+            template: (value: number) => value?.toString() || '0'
         },
         {
             id: 'specificationsCount',
             header: 'Спецификаций',
             width: 130,
-            template: (value: number) => value || 0
-        },
-    ];
-
-    const toolbarItems = [
-        {
-            id: 'add-company',
-            comp: 'button',
-            icon: 'wxi-plus',
-            text: 'Создать компанию',
-            action: () => {
-                setSelectedCompanyId(null);
-                setShowForm(true);
-            },
-        },
-        { comp: 'spacer' },
-        {
-            id: 'refresh',
-            comp: 'button',
-            icon: 'wxi-refresh',
-            text: 'Обновить',
-            action: async () => {
-                const fetchAllData = useERPStore.getState().fetchAllData;
-                await fetchAllData();
-            },
+            template: (value: number) => value?.toString() || '0'
         },
     ];
 
@@ -104,7 +81,8 @@ export function Companies() {
                             init={setApi}
                             data={companiesWithStats}
                             columns={columns}
-                            toolbar={<Toolbar items={toolbarItems} />}
+                            filterValues={filterValues}
+                            onFilterChange={setFilterValues}
                             onRowDoubleClick={handleRowDoubleClick}
                         />
                     </HeaderMenu>

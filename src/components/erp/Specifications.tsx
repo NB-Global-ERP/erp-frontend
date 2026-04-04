@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import {ContextMenu, Grid, HeaderMenu, Toolbar} from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
 import { useERPStore } from '@/stores/erpStore';
 import { SpecificationForm } from './SpecificationForm';
 import { formatCurrency } from '@/utils/formatters.ts';
@@ -10,7 +10,8 @@ import { Locale } from "@svar-ui/react-core";
 export function Specifications() {
     const [showForm, setShowForm] = useState(false);
     const [selectedSpecId, setSelectedSpecId] = useState<number | null>(null);
-    const [api, setApi] = useState(null);
+    const [api, setApi] = useState<IApi>();
+    const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
     const specifications = useERPStore((state) => state.specifications);
     const companies = useERPStore((state) => state.companies);
@@ -46,7 +47,7 @@ export function Specifications() {
             id: 'number',
             header: 'Номер',
             width: 100,
-            template: (value: number) => value || '—'
+            template: (value: number) => value?.toString() || '—'
         },
         {
             id: 'date',
@@ -64,13 +65,13 @@ export function Specifications() {
             id: 'groupsCount',
             header: 'Групп',
             width: 80,
-            template: (value: number) => value || 0
+            template: (value: number) => value?.toString() || '0'
         },
         {
             id: 'participantsCount',
             header: 'Участников',
             width: 100,
-            template: (value: number) => value || 0
+            template: (value: number) => value?.toString() || '0'
         },
         {
             id: 'totalAmount',
@@ -83,30 +84,6 @@ export function Specifications() {
             header: 'Итого с НДС',
             width: 150,
             template: (value: number) => formatCurrency(value || 0)
-        },
-    ];
-
-    const toolbarItems = [
-        {
-            id: 'add-spec',
-            comp: 'button',
-            icon: 'wxi-plus',
-            text: 'Создать спецификацию',
-            action: () => {
-                setSelectedSpecId(null);
-                setShowForm(true);
-            },
-        },
-        { comp: 'spacer' },
-        {
-            id: 'refresh',
-            comp: 'button',
-            icon: 'wxi-refresh',
-            text: 'Обновить',
-            action: async () => {
-                const fetchAllData = useERPStore.getState().fetchAllData;
-                await fetchAllData();
-            },
         },
     ];
 
@@ -138,7 +115,8 @@ export function Specifications() {
                             init={setApi}
                             data={specsWithData}
                             columns={columns}
-                            toolbar={<Toolbar items={toolbarItems} />}
+                            filterValues={filterValues}
+                            onFilterChange={setFilterValues}
                             onRowDoubleClick={handleRowDoubleClick}
                         />
                     </HeaderMenu>

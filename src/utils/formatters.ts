@@ -25,14 +25,12 @@ export function formatDateTime(date: Date | string | number): string {
     return format(d, 'dd.MM.yyyy, HH:mm', { locale: ru });
 }
 
-export function formatMonthYearRu(_: string, b: string | Date): string {
-    const d = new Date(b);
-    return format(d, 'MMM yyyy', { locale: ru });
+export function formatMonthYearRu(b: Date): string {
+    return format(b, 'MMM yyyy', { locale: ru });
 }
 
-export function formatDayMonthRu(_: string, b: string | Date): string {
-    const d = new Date(b);
-    return format(d, 'dd MMM', { locale: ru });
+export function formatDayMonthRu(b: Date): string {
+    return format(b, 'dd MMM', { locale: ru });
 }
 
 export function formatRelativeTime(date: Date | string | number): string {

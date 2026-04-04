@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
 import { CourseForm } from './CourseForm';
 import { Plus } from 'lucide-react';
 import {formatCurrency} from "@/utils/formatters.ts";
@@ -10,7 +10,8 @@ import {useCourses} from "@/hooks/useCourses.ts";
 export function Courses() {
     const [showForm, setShowForm] = useState(false);
     const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
-    const [api, setApi] = useState(null);
+    const [api, setApi] = useState<IApi>();
+    const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
     const courses = useCourses();
 
@@ -49,6 +50,8 @@ export function Courses() {
                             init={setApi}
                             data={courses}
                             columns={columns}
+                            filterValues={filterValues}
+                            onFilterChange={setFilterValues}
                             onRowDoubleClick={(row) => {
                                 setSelectedCourseId(row.id);
                                 setShowForm(true);

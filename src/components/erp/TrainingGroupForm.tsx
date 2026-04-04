@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
-import { GroupParticipants } from './GroupParticipants';
+// import { GroupParticipants } from './GroupParticipants';
 import { X } from 'lucide-react';
 import {TIME} from "@/utils/constants.ts";
 
@@ -225,9 +225,9 @@ export function TrainingGroupForm({ groupId, onClose, onSave }: TrainingGroupFor
                         </form>
                     )}
 
-                    {activeTab === 'participants' && groupId && (
+                    {/* activeTab === 'participants' && groupId && (
                         <GroupParticipants groupId={groupId} />
-                    )}
+                    ) */}
 
                     {activeTab === 'participants' && !groupId && (
                         <div className="text-center py-8 text-gray-500">

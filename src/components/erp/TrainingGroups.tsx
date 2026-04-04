@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Grid, Toolbar, ContextMenu, HeaderMenu } from '@svar-ui/react-grid';
+import {Grid, ContextMenu, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
 import { Plus } from 'lucide-react';
 import { Locale } from '@svar-ui/react-core';
 import { TrainingGroupForm } from './TrainingGroupForm';
@@ -11,7 +11,8 @@ import {useGroups} from "@/hooks/useGroups.ts";
 export function TrainingGroups() {
     const [showForm, setShowForm] = useState(false);
     const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
-    const [api, setApi] = useState(null);
+    const [api, setApi] = useState<IApi>();
+    const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
     const { groups, isLoading } = useGroups();
     const courses = useCourses();
@@ -30,27 +31,6 @@ export function TrainingGroups() {
         { id: 'totalCost', header: 'Стоимость', width: 150,
             template: (value: number) => formatCurrency(value) },
         { id: 'status', header: 'Статус', width: 120},
-    ];
-
-    const toolbarItems = [
-        {
-            id: 'add-group',
-            comp: 'button',
-            icon: 'wxi-plus',
-            text: 'Создать группу',
-            action: () => {
-                setSelectedGroupId(null);
-                setShowForm(true);
-            },
-        },
-        { comp: 'spacer' },
-        {
-            id: 'refresh',
-            comp: 'button',
-            icon: 'wxi-refresh',
-            text: 'Обновить',
-            action: async () => {},
-        },
     ];
 
     if (isLoading && groups.length === 0) {
@@ -86,7 +66,8 @@ export function TrainingGroups() {
                             init={setApi}
                             data={groups}
                             columns={columns}
-                            toolbar={<Toolbar items={toolbarItems} />}
+                            filterValues={filterValues}
+                            onFilterChange={setFilterValues}
                             onRowDoubleClick={(row) => {
                                 setSelectedGroupId(row.id);
                                 setShowForm(true);

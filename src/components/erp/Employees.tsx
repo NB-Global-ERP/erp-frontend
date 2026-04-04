@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {ContextMenu, Grid, HeaderMenu} from '@svar-ui/react-grid';
+import {ContextMenu, Grid, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
 import { EmployeeForm } from './EmployeeForm';
 import { Plus } from 'lucide-react';
 import ru from "@/utils/ru.ts";
@@ -10,7 +10,8 @@ import {useCompanies} from "@/hooks/useCompanies.ts";
 export function Employees() {
     const [showForm, setShowForm] = useState(false);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
-    const [api, setApi] = useState(null);
+    const [api, setApi] = useState<IApi>();
+    const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
     const employees = useEmployees()
     const companies = useCompanies();
@@ -49,6 +50,8 @@ export function Employees() {
                             init={setApi}
                             data={employeesWithCompany}
                             columns={columns}
+                            filterValues={filterValues}
+                            onFilterChange={setFilterValues}
                             onRowDoubleClick={(row) => {
                                 setSelectedEmployeeId(row.id);
                                 setShowForm(true);

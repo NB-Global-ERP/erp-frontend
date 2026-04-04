@@ -4,6 +4,7 @@ import { Locale } from '@svar-ui/react-core';
 import { useERPStore } from '@/stores/erpStore';
 import ru from '@/utils/ru';
 import { formatDayMonthRu, formatMonthYearRu } from "@/utils/formatters.ts";
+import type {IApi} from "@svar-ui/gantt-store";
 
 const scales = [
     { unit: 'week', step: 1, format: formatDayMonthRu, label: "неделя" },
@@ -29,7 +30,7 @@ const getStatusColor = (statusName: string): string => {
 
 export function TrainingGantt() {
     const [scaleIndex, setScaleIndex] = useState(0);
-    const [api, setApi] = useState(null);
+    const [api, setApi] = useState<IApi>();
 
     const groups = useERPStore((state) => state.groups);
     const courses = useERPStore((state) => state.courses);
