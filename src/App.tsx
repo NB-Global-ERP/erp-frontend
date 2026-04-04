@@ -7,7 +7,6 @@ import { Specifications } from '@/components/erp/Specifications';
 import { Courses } from '@/components/erp/Courses';
 import { Employees } from '@/components/erp/Employees';
 import { Companies } from "@/components/erp/Companies.tsx";
-import { useState } from 'react';
 
 const tabs = [
     { id: 'dashboard', label: 'Дашборд', component: Dashboard },
@@ -22,14 +21,11 @@ const tabs = [
 function App() {
     const activeTab = useUIStore((state) => state.activeTab);
     const setActiveTab = useUIStore((state) => state.setActiveTab);
-    const [isChanging, setIsChanging] = useState(false);
 
     const ActiveComponent = tabs.find(t => t.id === activeTab)?.component || Dashboard;
 
     const handleTabChange = (tabId: string) => {
-        setIsChanging(true);
         setActiveTab(tabId as any);
-        setTimeout(() => setIsChanging(false), 200);
     };
 
     return (
