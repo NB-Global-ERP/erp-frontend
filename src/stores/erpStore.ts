@@ -185,7 +185,6 @@ export const useERPStore = create<ERPState>((set, get) => ({
                 updates.courseBasicStats = results[1].value;
             }
             if (results[2].status === 'fulfilled') {
-                console.log(results[2].value);
                 updates.totalCompanies = results[2].value;
             }
             if (results[3].status === 'fulfilled') {

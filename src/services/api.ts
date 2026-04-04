@@ -53,14 +53,8 @@ export const updateCourse = async (
 export const deleteCourse = async (id: number): Promise<void> =>
     raw.deleteCourseRaw(id);
 
-export const getCoursesCount = async (): Promise<number> => {
-    const response = await raw.getCoursesCountRaw();
-    console.log(response, response.count);
-    if (response && typeof response === 'object' && 'count' in response) {
-        return Number((response as { count: number }).count);
-    }
-    return 0;
-};
+export const getCoursesCount = async (): Promise<number> =>
+    raw.getCoursesCountRaw();
 
 export const getCoursesBasicStats = async (): Promise<CourseBasicStats> =>
     mapStats(await raw.getCoursesBasicStatsRaw());
@@ -139,8 +133,10 @@ export const deleteStatus = async (id: number): Promise<void> =>
 export const getCompanies = async (): Promise<Company[]> =>
     (await raw.getCompaniesListRaw()).map(mapCompany);
 
-export const getCompaniesCount = async (): Promise<number> =>
-    raw.getCompaniesCountRaw();
+export const getCompaniesCount = async (): Promise<number> => {
+    const response = await raw.getCompaniesCountRaw();
+    return response.count;
+};
 
 export const getCompany = async (id: number): Promise<Company> =>
     mapCompany(await raw.getCompanyRaw(id));

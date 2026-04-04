@@ -56,7 +56,7 @@ export const updateCourseRaw = (
 export const deleteCourseRaw = (id: number): Promise<void> =>
     apiClient.delete('/courses', { params: { id } });
 
-export const getCoursesCountRaw = (): Promise<{ count: number }> =>
+export const getCoursesCountRaw = (): Promise<number> =>
     apiClient.get('/courses/analytics/count');
 
 export const getCoursesBasicStatsRaw = (): Promise<CourseBasicStatsResponse> =>
@@ -134,7 +134,7 @@ export const deleteCourseCompletionStatusRaw = (id: number): Promise<void> =>
 export const getCompaniesListRaw = (): Promise<CompanyResponse[]> =>
     apiClient.get('/companies/list');
 
-export const getCompaniesCountRaw = (): Promise<number> =>
+export const getCompaniesCountRaw = (): Promise<{ count: number }> =>
     apiClient.get('/companies/count');
 
 export const getCompanyRaw = (id: number): Promise<CompanyResponse> =>
