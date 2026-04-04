@@ -51,8 +51,11 @@ export function SpecificationForm({ specId, onClose, onSave }: SpecificationForm
     });
 
     const onSubmit = async (data: SpecFormData) => {
+        const dateTime = new Date(data.datetime);
+        const isoDateTime = dateTime.toISOString();
+
         const requestData = {
-            datetime: data.datetime,
+            datetime: isoDateTime,
             number: data.number,
             companyId: data.companyId,
             totalAmountExcludingVat: totalAmount,

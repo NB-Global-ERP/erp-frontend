@@ -173,7 +173,7 @@ export function Dashboard() {
                         <div className="w-full bg-gray-100 rounded-full h-2">
                             <div
                                 className="bg-primary-500 h-2 rounded-full transition-all duration-500"
-                                style={{width: formatPercent(averageProgress)}}
+                                style={{width: `${formatPercent(averageProgress)}`}}
                             />
                         </div>
 
