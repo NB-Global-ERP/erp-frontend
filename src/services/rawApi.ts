@@ -20,7 +20,7 @@ import type {
     CompanyPatchRequest,
     CourseCompletionStatusRequest,
     CourseCompletionStatusPatchRequest,
-    CourseBasicStatsResponse
+    CourseBasicStatsResponse, CourseCountResponse
 } from '@/types/api.types';
 
 export const apiClient = axios.create({
@@ -56,7 +56,7 @@ export const updateCourseRaw = (
 export const deleteCourseRaw = (id: number): Promise<void> =>
     apiClient.delete('/courses', { params: { id } });
 
-export const getCoursesCountRaw = (): Promise<number> =>
+export const getCoursesCountRaw = (): Promise<CourseCountResponse> =>
     apiClient.get('/courses/analytics/count');
 
 export const getCoursesBasicStatsRaw = (): Promise<CourseBasicStatsResponse> =>

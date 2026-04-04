@@ -54,7 +54,7 @@ export const deleteCourse = async (id: number): Promise<void> =>
     raw.deleteCourseRaw(id);
 
 export const getCoursesCount = async (): Promise<number> =>
-    raw.getCoursesCountRaw();
+    raw.getCoursesCountRaw().then(r => r.count);
 
 export const getCoursesBasicStats = async (): Promise<CourseBasicStats> =>
     mapStats(await raw.getCoursesBasicStatsRaw());
