@@ -57,7 +57,7 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
             dateBegin: new Date().toISOString().split('T')[0],
             dateEnd: new Date(Date.now() + TIME.WEEK).toISOString().split('T')[0],
             pricePerPerson: 0,
-            courseCompletionId: 1,
+            courseCompletionId: undefined,
             specificationId: undefined,
         },
     });
@@ -201,9 +201,10 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                         Статус *
                                     </label>
                                     <select
-                                        {...register('courseCompletionId', { valueAsNumber: true })}
+                                        {...register('courseCompletionId', {valueAsNumber: true})}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     >
+                                        <option value="">Выберите статус</option>
                                         {statuses.map(status => (
                                             <option key={status.id} value={status.id}>
                                                 {status.name}
@@ -223,7 +224,7 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                         {...register('specificationId', { valueAsNumber: true })}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     >
-                                        <option value="">Без спецификации</option>
+                                        <option value="">Выберите спецификацию</option>
                                         {specifications.map(spec => (
                                             <option key={spec.id} value={spec.id}>
                                                 Спецификация №{spec.number} от {spec.date.toLocaleDateString('ru-RU')}
@@ -263,9 +264,9 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                             </form>
                         )}
 
-                        {/* activeTab === 'participants' && groupId && (
-                            <GroupParticipants groupId={groupId} />
-                        ) */}
+                        {/*activeTab === 'participants' && group && (*/}
+                        {/*    <GroupParticipants group={group} />*/}
+                        {/*)*/}
 
                         {activeTab === 'participants' && !isEditing && (
                             <div className="text-center py-8 text-gray-500">

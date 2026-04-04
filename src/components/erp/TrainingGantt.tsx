@@ -3,7 +3,7 @@ import { Gantt, ContextMenu } from '@svar-ui/react-gantt';
 import { Locale } from '@svar-ui/react-core';
 import { useERPStore } from '@/stores/erpStore';
 import ru from '@/utils/ru';
-import { formatDayMonthRu, formatMonthYearRu } from "@/utils/formatters.ts";
+import {formatDayMonthRu, formatMonthYearRu, getStatusColor} from "@/utils/formatters.ts";
 import type {IApi} from "@svar-ui/gantt-store";
 
 const scales = [
@@ -18,23 +18,13 @@ const columns = [
     { id: 'duration', header: 'Длительность', width: 150 },
 ];
 
-const getStatusColor = (statusName: string): string => {
-    const colors: Record<string, string> = {
-        'Планируется': '#3b82f6',
-        'В процессе': '#f59e0b',
-        'Завершён': '#22c55e',
-        'Отменён': '#ef4444',
-    };
-    return colors[statusName] || '#6b7280';
-};
-
 export function TrainingGantt() {
     const [scaleIndex, setScaleIndex] = useState(0);
     const [api, setApi] = useState<IApi>();
 
     const groups = useERPStore((state) => state.groups);
     const courses = useERPStore((state) => state.courses);
-    const statuses = useERPStore((state) => state.statuses);
+    const statuses = [{id: 1, name: 'PLANNING'}, {id: 1, name: 'IN_PROCESS'}, {id: 1, name: 'COMPLETED'}]
     const updateGroup = useERPStore((state) => state.updateGroup);
 
     const ganttTasks = useMemo(() => {
@@ -52,13 +42,13 @@ export function TrainingGantt() {
                 end: end,
                 duration: duration,
                 progress: group.averageProgress / 100,
-                color: getStatusColor(group.status || 'Планируется'),
-                statusName: group.status || 'Неизвестно',
+                color: getStatusColor(group.status),
+                statusName: group.status,
                 participantCount: group.participantCount,
                 totalCost: group.totalCost,
             };
         });
-    }, [groups, courses, statuses]);
+    }, [groups, courses]);
 
     const handleTaskUpdate = async (updatedTask: any) => {
         await updateGroup(updatedTask.id, {
@@ -116,7 +106,7 @@ export function TrainingGantt() {
             </div>
 
             <div className="h-[500px] max-w-full">
-                <Locale words={{ ...ru, ...ru }}>
+                <Locale words={{...ru, ...ru}}>
                     <ContextMenu api={api}>
                         <Gantt
                             tasks={ganttTasks}
@@ -132,22 +122,15 @@ export function TrainingGantt() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-4 text-sm border-t pt-4">
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span>Планируется</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <span>В процессе</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span>Завершён</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span>Отменён</span>
-                </div>
+                {statuses.map(status => (
+                    <div key={status.id} className="flex items-center gap-2">
+                        <div
+                            className="w-3 h-3 rounded-full"
+                            style={{backgroundColor: getStatusColor(status.name)}}
+                        />
+                        <span>{status.name}</span>
+                    </div>
+                ))}
                 <div className="flex items-center gap-2 ml-auto">
                     <div className="w-3 h-3 rounded bg-gray-200"></div>
                     <span>Прогресс</span>
