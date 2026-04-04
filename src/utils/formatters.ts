@@ -11,8 +11,8 @@ export function formatCurrency(amount: number, withCents: boolean = false): stri
     return formatter.format(amount);
 }
 
-export function formatPercent(value: number, decimals: number = 1): string {
-    return `${value.toFixed(decimals)}%`;
+export function formatPercent(value: number): string {
+    return `${value}%`;
 }
 
 export function formatDate(date: Date | string | number): string {

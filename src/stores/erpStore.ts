@@ -96,26 +96,42 @@ export const useERPStore = create<ERPState>((set, get) => ({
         set({ isLoading: true, error: null });
 
         try {
-            const [courses, employees, groups, specifications, companies, statuses] =
-                await Promise.all([
-                    api.getCourses(),
-                    api.getEmployees(),
-                    api.getGroups(),
-                    api.getSpecifications(),
-                    api.getCompanies(),
-                    api.getStatuses(),
-                ]);
+            const results = await Promise.allSettled([
+                api.getCourses(),
+                api.getEmployees(),
+                api.getGroups(),
+                api.getSpecifications(),
+                api.getCompanies(),
+                api.getStatuses(),
+            ]);
 
-            set({
-                courses,
-                employees,
-                groups,
-                specifications,
-                companies,
-                statuses,
-                isLoading: false,
+            if (results[0].status === 'fulfilled') {
+                set({ courses: results[0].value });
+            }
+            if (results[1].status === 'fulfilled') {
+                set({ employees: results[1].value });
+            }
+            if (results[2].status === 'fulfilled') {
+                set({ groups: results[2].value });
+            }
+            if (results[3].status === 'fulfilled') {
+                set({ specifications: results[3].value });
+            }
+            if (results[4].status === 'fulfilled') {
+                set({ companies: results[4].value });
+            }
+            if (results[5].status === 'fulfilled') {
+                set({ statuses: results[5].value });
+            }
+
+            const names = ['courses', 'employees', 'groups', 'specifications', 'companies', 'statuses'];
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    console.error(`Failed to fetch ${names[index]}:`, result.reason);
+                }
             });
 
+            set({ isLoading: false });
         } catch (e) {
             set({
                 error: (e as Error).message,
@@ -151,12 +167,7 @@ export const useERPStore = create<ERPState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            const [
-                courseCount,
-                courseBasicStats,
-                totalCompanies,
-                totalEmployeesCount,
-            ] = await Promise.all([
+            const results = await Promise.allSettled([
                 api.getCoursesCount(),
                 api.getCoursesBasicStats(),
                 api.getCompaniesCount(),
@@ -165,24 +176,39 @@ export const useERPStore = create<ERPState>((set, get) => ({
 
             const { groups } = get();
 
-            const totalGroups = groups.length;
-            const totalSpecifications = get().specifications.length;
-            const averageGroupProgress = groups.length > 0
+            const updates: Partial<AnalyticsState> = {};
+
+            if (results[0].status === 'fulfilled') {
+                updates.courseCount = results[0].value;
+            }
+            if (results[1].status === 'fulfilled') {
+                updates.courseBasicStats = results[1].value;
+            }
+            if (results[2].status === 'fulfilled') {
+                updates.totalCompanies = results[2].value;
+            }
+            if (results[3].status === 'fulfilled') {
+                updates.totalEmployees = results[3].value;
+            }
+
+            updates.totalGroups = groups.length;
+            updates.totalSpecifications = get().specifications.length;
+            updates.averageGroupProgress = groups.length > 0
                 ? Math.round(groups.reduce((sum, g) => sum + g.averageProgress, 0) / groups.length)
                 : 0;
-            const totalRevenue = groups.reduce((sum, g) => sum + g.totalCost, 0);
+            updates.totalRevenue = groups.reduce((sum, g) => sum + g.totalCost, 0);
+
+            const names = ['coursesCount', 'coursesBasicStats', 'companiesCount', 'employeesCount'];
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    console.error(`Failed to fetch ${names[index]}:`, result.reason);
+                }
+            });
 
             set((state) => ({
                 analytics: {
                     ...state.analytics,
-                    courseCount,
-                    courseBasicStats,
-                    totalCompanies,
-                    totalEmployees: totalEmployeesCount,
-                    totalGroups,
-                    totalSpecifications,
-                    averageGroupProgress,
-                    totalRevenue,
+                    ...updates,
                 },
                 isLoading: false,
             }));
@@ -191,7 +217,6 @@ export const useERPStore = create<ERPState>((set, get) => ({
                 error: (e as Error).message,
                 isLoading: false
             });
-            throw e;
         }
     },
 
