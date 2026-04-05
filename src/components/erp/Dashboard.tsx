@@ -14,8 +14,7 @@ export function Dashboard() {
         totalGroups,
         totalSpecifications,
         averageGroupProgress,
-        totalRevenue,
-        isLoading
+        totalRevenue
     } = useAnalytics();
 
     const totalBudget = totalRevenue;
@@ -28,17 +27,6 @@ export function Dashboard() {
         { label: 'Спецификации', value: totalSpecifications, icon: FileText, color: 'bg-primary-50 text-primary-600' },
         { label: 'Компании', value: totalCompanies, icon: Building2, color: 'bg-primary-50 text-primary-600' },
     ];
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
-                    <p className="mt-4 text-gray-500">Загрузка аналитики...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="space-y-6">
