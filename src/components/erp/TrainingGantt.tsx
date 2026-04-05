@@ -15,7 +15,7 @@ const scales = [
     { unit: 'quarter', step: 1, format: '%Q-й %Y', label: "квартал" },
 ];
 
-const columns = [
+const columns: any[] = [
     { id: 'text', header: 'Название', width: 150 },
     { id: 'start', header: 'Начало', width: 100 },
     { id: 'duration', header: 'Длительность', width: 120 },
