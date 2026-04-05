@@ -1,24 +1,19 @@
-import { create } from 'zustand';
+import {create} from 'zustand';
 import * as api from '@/services/api';
+import type {AnalyticsState, Company, Course, Employee, Specification, Status, TrainingGroup} from '@/types/erp.types';
 import type {
-    Course,
-    Employee,
-    TrainingGroup,
-    Specification,
-    Company, Status,
-    AnalyticsState
-} from '@/types/erp.types';
-import type {
-    CourseRequest,
-    CoursePatchRequest,
-    StudentRequest,
-    StudentPatchRequest,
-    GroupRequest,
-    GroupPatchRequest,
-    SpecificationRequest,
-    SpecificationPatchRequest,
+    CompanyPatchRequest,
     CompanyRequest,
-    CompanyPatchRequest, CourseCompletionStatusPatchRequest, CourseCompletionStatusRequest
+    CourseCompletionStatusPatchRequest,
+    CourseCompletionStatusRequest,
+    CoursePatchRequest,
+    CourseRequest,
+    GroupPatchRequest,
+    GroupRequest,
+    SpecificationPatchRequest,
+    SpecificationRequest,
+    StudentPatchRequest,
+    StudentRequest
 } from '@/types/api.types';
 
 interface ERPState {
@@ -51,6 +46,7 @@ interface ERPState {
     updateGroup: (id: number, data: GroupPatchRequest) => Promise<void>;
     deleteGroup: (id: number) => Promise<void>;
     addStudentToGroup: (groupId: number, studentId: number) => Promise<void>;
+    checkGroupEnd: (id: number, dataBegin: string) => Promise<string>;
 
     addSpecification: (data: SpecificationRequest) => Promise<void>;
     updateSpecification: (id: number, data: SpecificationPatchRequest) => Promise<void>;
@@ -336,6 +332,15 @@ export const useERPStore = create<ERPState>((set, get) => ({
             set((state) => ({
                 groups: state.groups.filter(g => g.id !== id),
             }));
+        } catch (e) {
+            set({ error: (e as Error).message });
+            throw e;
+        }
+    },
+
+    checkGroupEnd: async (id, dataBegin) => {
+        try {
+            return await api.checkGroupDataEnd(id, dataBegin);
         } catch (e) {
             set({ error: (e as Error).message });
             throw e;

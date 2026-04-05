@@ -70,7 +70,6 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                 completionPercent: Math.min(1, Math.max(0, Number(val) / 100)),
             }));
             const updated = await patchGroupMembers(group.id, patches);
-            // merge updated values into local state
             setMembers(prev => prev.map(m => {
                 const u = updated.find(u => u.id === m.id);
                 return u ? { ...m, completionPercent: u.completionPercent } : m;

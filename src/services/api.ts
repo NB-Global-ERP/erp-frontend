@@ -95,6 +95,11 @@ export const addStudentToGroup = async (
 ): Promise<void> =>
     raw.addStudentToGroupRaw(groupId, studentId);
 
+export const checkGroupDataEnd = async (id: number, dataBegin: string): Promise<string> => {
+    const response = await raw.checkGroupEndData(id, dataBegin);
+    return response.dataEnd;
+};
+
 export const getGroupMembers = async (groupId: number): Promise<GroupMember[]> =>
     (await raw.getGroupMembersRaw(groupId)).map(mapGroupMember);
 

@@ -7,7 +7,7 @@ import {formatDayMonthRu, formatMonthYearRu, getStatusColor} from "@/utils/forma
 import type {IApi} from "@svar-ui/gantt-store";
 import {Save} from "lucide-react";
 import StatusSpan from "@/components/ui/StatusSpan.tsx";
-import {STATUS_MAPPER} from "@/utils/constants.ts";
+import {STATUS_MAPPER, TIME} from "@/utils/constants.ts";
 
 const scales = [
     { unit: 'week', step: 1, format: formatDayMonthRu, label: "неделя" },
@@ -35,6 +35,7 @@ export function TrainingGantt() {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     const updateGroup = useERPStore((state) => state.updateGroup);
+    const checkGroupEnd = useERPStore((state) => state.checkGroupEnd);
 
     const ganttTasks = useMemo(() => {
         return groups.map(group => {
@@ -42,7 +43,7 @@ export function TrainingGantt() {
 
             const start = new Date(group.startDate);
             const end = new Date(group.endDate);
-            const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+            const duration = Math.ceil((end.getTime() - start.getTime()) / (TIME.DAY));
 
             return {
                 id: group.id,
@@ -95,10 +96,19 @@ export function TrainingGantt() {
     };
 
     const init = useCallback((ganttApi: IApi) => {
-        ganttApi.on('update-task', ( ev ) => {
-            handleTaskUpdate(ganttApi.getTask(ev.id));
+        ganttApi.on('update-task', async ( ev ) => {
+            const task = ganttApi.getTask(ev.id);
+            if (!task || !task?.id || !task?.start) return;
+            handleTaskUpdate(task);
+            const newEndDate = await checkGroupEnd(Number(task.id), task.start.toISOString());
+            if (newEndDate) {
+                ganttApi?.exec("update-task", { id: task.id, task: { end: new Date(newEndDate), duration: Math.ceil(
+                            (new Date(newEndDate).getTime() - new Date(task.start).getTime()) /
+                            (TIME.DAY)
+                        ) }});
+            }
         });
-    }, []);
+    }, [checkGroupEnd]);
 
 
     return (

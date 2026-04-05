@@ -100,6 +100,9 @@ export const deleteGroupRaw = (id: number): Promise<void> =>
 export const addStudentToGroupRaw = (groupId: number, studentId: number): Promise<void> =>
     apiClient.post(`/groups/${groupId}/add/student/${studentId}`);
 
+export const checkGroupEndData = (id: number, dataBegin: string): Promise<{ dataEnd: string }> =>
+    apiClient.post('/groups/check', { params: { id, dataBegin } });
+
 export const getGroupMembersRaw = (groupId: number): Promise<GroupMemberResponse[]> =>
     apiClient.get(`/group-members/${groupId}`);
 
