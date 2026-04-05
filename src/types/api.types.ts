@@ -154,3 +154,15 @@ export interface GroupMemberPatchRequest {
     id: number;
     completionPercent: number; // 0.0 – 1.0
 }
+
+export interface AddStudentToGroupRequest {
+    studentAdditionals: {
+        studentId: number;
+        groupId: number;
+        initialProgress?: number;
+    }[];
+}
+
+export interface AddStudentToGroupResponse {
+    ids: number[];
+}

@@ -104,6 +104,28 @@ export const patchGroupMembers = async (
 ): Promise<GroupMember[]> =>
     (await raw.patchGroupMembersRaw(groupId, patches)).map(mapGroupMember);
 
+export const addStudentsToGroup = async (
+    groupId: number,
+    studentIds: number[]
+): Promise<number[]> => {
+    const res = await raw.addStudentsToGroupRaw({
+        studentAdditionals: studentIds.map(studentId => ({ studentId, groupId, initialProgress: 0 })),
+    });
+    return res.ids;
+};
+
+export const createCertificate = async (studentId: number, groupId: number): Promise<string> => {
+    const res = await raw.createCertificateRaw(studentId, groupId);
+    return res.id;
+};
+
+export const getCertificatePdf = async (params: {
+    studentId?: number;
+    groupId?: number;
+    certificateId?: string;
+}): Promise<Blob> =>
+    raw.getCertificateRaw(params);
+
 export const getSpecifications = async (): Promise<Specification[]> =>
     (await raw.getSpecificationsRaw()).map(mapSpecification);
 

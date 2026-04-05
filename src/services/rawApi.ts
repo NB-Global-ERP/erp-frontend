@@ -22,7 +22,9 @@ import type {
     CourseCompletionStatusPatchRequest,
     CourseBasicStatsResponse,
     GroupMemberResponse,
-    GroupMemberPatchRequest
+    GroupMemberPatchRequest,
+    AddStudentToGroupRequest,
+    AddStudentToGroupResponse
 } from '@/types/api.types';
 
 export const apiClient = axios.create({
@@ -105,6 +107,19 @@ export const getGroupMembersRaw = (groupId: number): Promise<GroupMemberResponse
 
 export const patchGroupMembersRaw = (groupId: number, data: GroupMemberPatchRequest[]): Promise<GroupMemberResponse[]> =>
     apiClient.patch(`/group-members/${groupId}`, data);
+
+export const addStudentsToGroupRaw = (data: AddStudentToGroupRequest): Promise<AddStudentToGroupResponse> =>
+    apiClient.post('/group-members/add/students', data);
+
+export const createCertificateRaw = (studentId: number, groupId: number): Promise<{ id: string }> =>
+    apiClient.post(`/certificates/students/${studentId}/groups/${groupId}`);
+
+export const getCertificateRaw = (params: {
+    studentId?: number;
+    groupId?: number;
+    certificateId?: string;
+}): Promise<Blob> =>
+    apiClient.get('/certificates', { params, responseType: 'blob' });
 
 export const getSpecificationsRaw = (): Promise<SpecificationResponse[]> =>
     apiClient.get('/specifications/list');
