@@ -1,4 +1,4 @@
-import { format, formatDistance } from 'date-fns';
+import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import {COLORS} from "@/utils/constants.ts";
 
@@ -26,6 +26,24 @@ export function getStatusColor(statusName: string): string {
     return colors[statusName] || COLORS.gray;
 }
 
+export function getFirstName(fullName: string) {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/);
+    return parts[1] || '';
+}
+
+export function getMiddleName(fullName: string) {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/);
+    return parts[2] || '';
+}
+
+export function getLastName(fullName: string) {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/);
+    return parts[0] || '';
+}
+
 export function formatMonthYearRu(b: Date): string {
     return format(b, 'MMM yyyy', { locale: ru });
 }
@@ -34,20 +52,6 @@ export function formatDayMonthRu(b: Date): string {
     return format(b, 'dd MMM', { locale: ru });
 }
 
-export function formatRelativeTime(date: Date | string | number): string {
-    const d = new Date(date);
-    const now = new Date();
-    return formatDistance(d, now, {
-        addSuffix: true,
-        locale: ru,
-        includeSeconds: true
-    });
-}
-
 export function cn(...classes: (string | boolean | undefined | null)[]): string {
     return classes.filter(Boolean).join(' ');
-}
-
-export function roundToTwo(value: number): number {
-    return Math.round(value * 100) / 100;
 }

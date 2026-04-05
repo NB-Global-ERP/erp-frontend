@@ -5,13 +5,14 @@ import { useERPStore } from '@/stores/erpStore';
 import { X } from 'lucide-react';
 import type {Employee} from "@/types/erp.types.ts";
 import {useState} from "react";
+import {getFirstName, getLastName, getMiddleName} from "@/utils/formatters.ts";
 
 const employeeSchema = z.object({
     firstName: z.string().min(1, 'Введите имя'),
     middleName: z.string().min(1, 'Введите отчество'),
     lastName: z.string().min(1, 'Введите фамилию'),
     companyId: z.number().min(1, 'Выберите компанию'),
-    email: z.string().email('Введите email'),
+    email: z.string().email('Некорректный формат email').min(1, 'Введите email'),
 });
 
 type EmployeeFormData = z.infer<typeof employeeSchema>;
@@ -35,7 +36,15 @@ export function EmployeeForm({ employee, onClose, onSave }: EmployeeFormProps) {
 
     const { register, handleSubmit, formState: { errors } } = useForm<EmployeeFormData>({
         resolver: zodResolver(employeeSchema),
-        defaultValues: employee || {},
+        defaultValues: employee
+            ? {
+                firstName: getFirstName(employee.fullName),
+                middleName: getMiddleName(employee.fullName),
+                lastName: getLastName(employee.fullName),
+                companyId: employee.companyId,
+                email: employee.email,
+            }
+            : {},
     });
 
     const onSubmit = async (data: EmployeeFormData) => {

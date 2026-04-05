@@ -34,7 +34,7 @@ export function SpecificationForm({ spec, onClose, onSave }: SpecificationFormPr
     const isEditing = !!spec;
 
     const linkedGroups = groups.filter(g => g.specificationId === spec?.id);
-    
+
     const { register, handleSubmit, formState: { errors } } = useForm<SpecFormData>({
         resolver: zodResolver(specSchema),
         defaultValues: spec
