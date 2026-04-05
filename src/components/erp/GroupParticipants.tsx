@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Loader2, AlertCircle, Users, RefreshCw, Save } from 'lucide-react';
+import { X, Loader2, AlertCircle, Users, RefreshCw, Save, ChevronUp, ChevronDown } from 'lucide-react';
 import { getGroupMembers, patchGroupMembers } from '@/services/api';
 import { getStudentRaw } from '@/services/rawApi';
 import { mapEmployee } from '@/utils/adapters';
@@ -54,6 +54,12 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
 
     const handleProgressChange = (memberId: number, value: string) => {
         setEdits(prev => ({ ...prev, [memberId]: value }));
+    };
+
+    const handleStep = (m: EnrichedMember, delta: number) => {
+        const current = Number(displayValue(m));
+        const next = Math.min(100, Math.max(0, current + delta));
+        handleProgressChange(m.id, String(next));
     };
 
     const handleSave = async () => {
@@ -189,17 +195,35 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                                                                     style={{ width: `${pct}%` }}
                                                                 />
                                                             </div>
-                                                            <div className={`flex items-center gap-1 px-2 py-1 rounded-lg border transition-colors ${isEdited ? 'border-primary-400 bg-white shadow-sm' : 'border-gray-200 bg-gray-50'}`}>
-                                                                <input
-                                                                    type="number"
-                                                                    min={0}
-                                                                    max={100}
-                                                                    value={displayValue(m)}
-                                                                    onChange={e => handleProgressChange(m.id, e.target.value)}
-                                                                    disabled={saving}
-                                                                    className="w-10 text-sm font-semibold text-center tabular-nums bg-transparent focus:outline-none disabled:opacity-50 text-gray-800"
-                                                                />
-                                                                <span className="text-sm font-medium text-gray-400">%</span>
+                                                            <div className={`flex items-center rounded-xl border transition-all ${isEdited ? 'border-primary-400 shadow-sm shadow-primary-100' : 'border-gray-200'} bg-white overflow-hidden`}>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleStep(m, -1)}
+                                                                    disabled={saving || Number(displayValue(m)) <= 0}
+                                                                    className="flex items-center justify-center w-7 h-8 text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed border-r border-gray-200"
+                                                                >
+                                                                    <ChevronDown className="w-3.5 h-3.5" />
+                                                                </button>
+                                                                <div className="flex items-center gap-0.5 px-2">
+                                                                    <input
+                                                                        type="number"
+                                                                        min={0}
+                                                                        max={100}
+                                                                        value={displayValue(m)}
+                                                                        onChange={e => handleProgressChange(m.id, e.target.value)}
+                                                                        disabled={saving}
+                                                                        className="w-9 text-sm font-semibold text-center tabular-nums bg-transparent focus:outline-none disabled:opacity-50 text-gray-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                                    />
+                                                                    <span className="text-sm font-medium text-gray-400">%</span>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleStep(m, 1)}
+                                                                    disabled={saving || Number(displayValue(m)) >= 100}
+                                                                    className="flex items-center justify-center w-7 h-8 text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed border-l border-gray-200"
+                                                                >
+                                                                    <ChevronUp className="w-3.5 h-3.5" />
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -236,10 +260,7 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                             <button
                                 onClick={handleSave}
                                 disabled={!hasEdits || saving}
-                                className="relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
-                                    bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-md shadow-primary-200
-                                    hover:shadow-lg hover:shadow-primary-300 hover:from-primary-600 hover:to-primary-700
-                                    disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 {saving
                                     ? <Loader2 className="w-4 h-4 animate-spin" />

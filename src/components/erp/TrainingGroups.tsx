@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {Grid, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
 import {Calendar, CalendarCheck, ChevronDown, Pen, Plus, RefreshCw, TrendingUp, Users, Wallet, X} from 'lucide-react';
 import { Locale } from '@svar-ui/react-core';
@@ -19,6 +19,7 @@ export function TrainingGroups() {
     const [selectedGroup, setSelectedGroup] = useState<GroupWithCourse | null>(null);
     const [api, setApi] = useState<IApi>();
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
+    const [gridKey, setGridKey] = useState(0);
 
     const selectedGroupRef = useRef<GroupWithCourse | null>(null);
     const showDetailRef = useRef(false);
@@ -26,6 +27,19 @@ export function TrainingGroups() {
     showDetailRef.current = showDetail;
 
     const { groups } = useGroups();
+
+    useEffect(() => {
+        if (!selectedGroup) return;
+        const updated = groups.find(g => g.id === selectedGroup.id);
+        if (updated) setSelectedGroup(updated);
+    }, [groups]);
+    const isLoading = useERPStore((state) => state.isLoading);
+    const fetchAllData = useERPStore((state) => state.fetchAllData);
+
+    const handleRefresh = async () => {
+        await fetchAllData();
+        setGridKey(k => k + 1);
+    };
 
     const columns = [
         { id: 'courseName', header: 'Курс', width: 180},
@@ -61,10 +75,11 @@ export function TrainingGroups() {
                 <h2 className="text-2xl font-semibold text-gray-900">Учебные группы</h2>
                 <div className="flex gap-2">
                     <button
-                        onClick={() => useERPStore.getState().fetchAllData()}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={handleRefresh}
+                        disabled={isLoading}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <RefreshCw className="w-4 h-4"/>
+                        <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}/>
                         Обновить
                     </button>
                     <button
@@ -83,6 +98,7 @@ export function TrainingGroups() {
             <Locale words={{...ru, ...ru}}>
                 <HeaderMenu api={api}>
                     <Grid
+                        key={gridKey}
                         init={init}
                         data={groups}
                         columns={columns}
