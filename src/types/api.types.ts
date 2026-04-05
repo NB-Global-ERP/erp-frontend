@@ -150,6 +150,17 @@ export interface GroupMemberResponse {
     completionPercent: number;
 }
 
+export interface ListGroupResponse {
+    groupResponses: GroupResponse[];
+    intersections: IdPair[];
+}
+
+export interface IdPair {
+    id1: number;
+    id2: number;
+}
+
+
 export interface GroupMemberPatchRequest {
     id: number;
     completionPercent: number; // 0.0 – 1.0

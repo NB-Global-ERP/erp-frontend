@@ -22,7 +22,7 @@ import type {
     CourseCompletionStatusPatchRequest,
     CourseBasicStatsResponse,
     GroupMemberResponse,
-    GroupMemberPatchRequest
+    GroupMemberPatchRequest, ListGroupResponse
 } from '@/types/api.types';
 
 export const apiClient = axios.create({
@@ -82,7 +82,7 @@ export const updateStudentRaw = (
 export const deleteStudentRaw = (id: number): Promise<void> =>
     apiClient.delete('/students', { params: { id } });
 
-export const getGroupsRaw = (): Promise<GroupResponse[]> =>
+export const getGroupsRaw = (): Promise<ListGroupResponse> =>
     apiClient.get('/groups/list');
 
 export const getGroupRaw = (id: number): Promise<GroupResponse> =>
