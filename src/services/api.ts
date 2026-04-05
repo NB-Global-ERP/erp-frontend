@@ -14,7 +14,7 @@ import type {
     TrainingGroup,
     Specification,
     Company, Status,
-    CourseBasicStats, GroupMember
+    CourseBasicStats, GroupMember, ListTrainingGroup
 } from '@/types/erp.types';
 
 import type {
@@ -74,9 +74,9 @@ export const updateEmployee = async (id: number, data: StudentPatchRequest): Pro
 export const deleteEmployee = async (id: number): Promise<void> =>
     raw.deleteStudentRaw(id);
 
-export const getGroups = async (): Promise<TrainingGroup[]> => {
+export const getGroups = async (): Promise<ListTrainingGroup> => {
     const response = await raw.getGroupsRaw();
-    return (response.groupResponses).map(mapGroup);
+    return { groups: (response.groupResponses).map(mapGroup), intersections: response.intersections } as ListTrainingGroup;
 }
 
 export const getGroup = async (id: number): Promise<TrainingGroup> =>

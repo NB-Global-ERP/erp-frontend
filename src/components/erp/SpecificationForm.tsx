@@ -143,6 +143,34 @@ export function SpecificationForm({ spec, onClose, onSave }: SpecificationFormPr
                                     <p className="mt-1 text-sm text-red-600">{errors.companyId.message}</p>
                                 )}
                             </div>
+                            <div className="flex justify-between gap-3 pt-4">
+                                {isEditing &&
+                                    <div>
+                                        <button
+                                            type="button"
+                                            onClick={handleDeleteClick}
+                                            className="px-4 py-2 border border-danger text-danger rounded-lg hover:bg-danger hover:text-white transition-colors"
+                                        >
+                                            Удалить
+                                        </button>
+                                    </div>
+                                }
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                                    >
+                                        {isEditing ? 'Сохранить' : 'Создать'}
+                                    </button>
+                                </div>
+                            </div>
                         </form>
 
                         {isEditing && (
@@ -180,35 +208,6 @@ export function SpecificationForm({ spec, onClose, onSave }: SpecificationFormPr
                                 </div>
                             </div>
                         )}
-
-                        <div className="flex justify-between gap-3 pt-4">
-                            {isEditing &&
-                                <div>
-                                    <button
-                                        type="button"
-                                        onClick={handleDeleteClick}
-                                        className="px-4 py-2 border border-danger text-danger rounded-lg hover:bg-danger hover:text-white transition-colors"
-                                    >
-                                        Удалить
-                                    </button>
-                                </div>
-                            }
-                            <div className="flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    Отмена
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
-                                >
-                                    {isEditing ? 'Сохранить' : 'Создать'}
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

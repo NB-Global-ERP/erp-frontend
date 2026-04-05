@@ -73,3 +73,13 @@ export interface AnalyticsState {
     averageGroupProgress: number;
     totalRevenue: number;
 }
+
+export interface IdTrainingGroupPairs {
+    id1: number;
+    id2: number;
+}
+
+export interface ListTrainingGroup {
+    groups: TrainingGroup[];
+    intersections: IdTrainingGroupPairs[];
+}

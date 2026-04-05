@@ -1,6 +1,15 @@
 import {create} from 'zustand';
 import * as api from '@/services/api';
-import type {AnalyticsState, Company, Course, Employee, Specification, Status, TrainingGroup} from '@/types/erp.types';
+import type {
+    AnalyticsState,
+    Company,
+    Course,
+    Employee,
+    IdTrainingGroupPairs,
+    Specification,
+    Status,
+    TrainingGroup
+} from '@/types/erp.types';
 import type {
     CompanyPatchRequest,
     CompanyRequest,
@@ -28,6 +37,8 @@ interface ERPState {
 
     isLoading: boolean;
     error: string | null;
+
+    idsOfGroup: IdTrainingGroupPairs[];
 
     fetchAllData: () => Promise<void>;
 
@@ -70,6 +81,8 @@ export const useERPStore = create<ERPState>((set, get) => ({
     specifications: [],
     statuses: [],
 
+    idsOfGroup: [],
+
     analytics: {
         courseTotalDuration: 0,
         courseMinDuration: 0,
@@ -108,7 +121,8 @@ export const useERPStore = create<ERPState>((set, get) => ({
                 set({ employees: results[1].value });
             }
             if (results[2].status === 'fulfilled') {
-                set({ groups: results[2].value });
+                set({ groups: results[2].value.groups });
+                set({ idsOfGroup: results[2].value.intersections });
             }
             if (results[3].status === 'fulfilled') {
                 set({ specifications: results[3].value });
@@ -303,7 +317,7 @@ export const useERPStore = create<ERPState>((set, get) => ({
             await api.createGroup(data);
             const groups = await api.getGroups();
 
-            set({ groups });
+            set({ groups: groups.groups });
         } catch (e) {
             set({ error: (e as Error).message });
             throw e;
@@ -351,7 +365,7 @@ export const useERPStore = create<ERPState>((set, get) => ({
         try {
             await api.addStudentToGroup(groupId, studentId);
             const groups = await api.getGroups();
-            set({ groups });
+            set({ groups: groups.groups });
 
             await get().fetchAllAnalytics();
         } catch (e) {
