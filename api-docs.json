@@ -226,6 +226,32 @@
                 }
             }
         },
+        "/api/v1/groups/check": {
+            "post": {
+                "tags": ["group-controller"],
+                "operationId": "check",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    },
+                    {
+                        "name": "dataBegin",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "string", "format": "date-time" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/DataResponse" } } }
+                    }
+                }
+            }
+        },
         "/api/v1/group-members/add/students": {
             "post": {
                 "tags": ["group-member-controller"],
@@ -651,11 +677,7 @@
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "content": {
-                            "*/*": {
-                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/GroupResponse" } }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/ListGroupResponse" } } }
                     }
                 }
             }
@@ -858,18 +880,9 @@
                 "properties": {
                     "datetime": { "type": "string", "format": "date-time", "example": "2025-08-15T00:00:00Z" },
                     "number": { "type": "integer", "format": "int32", "example": 42 },
-                    "companyId": { "type": "integer", "format": "int32", "example": 1 },
-                    "totalAmountExcludingVat": { "type": "number", "example": 100000.0, "minimum": 0.0 },
-                    "vatAmount22Percent": { "type": "number", "example": 22000.0, "minimum": 0.0 },
-                    "totalAmountIncludingVat": { "type": "number", "example": 122000.0, "minimum": 0.0 }
+                    "companyId": { "type": "integer", "format": "int32", "example": 1 }
                 },
-                "required": [
-                    "companyId",
-                    "datetime",
-                    "totalAmountExcludingVat",
-                    "totalAmountIncludingVat",
-                    "vatAmount22Percent"
-                ]
+                "required": ["companyId", "datetime"]
             },
             "GroupRequest": {
                 "type": "object",
@@ -880,6 +893,10 @@
                     "specificationId": { "type": "integer", "format": "int32", "example": 1 }
                 },
                 "required": ["courseCompletionId", "courseId", "dateBegin", "specificationId"]
+            },
+            "DataResponse": {
+                "type": "object",
+                "properties": { "dataEnd": { "type": "string", "format": "date-time" } }
             },
             "AddStudentToGroupRequest": {
                 "type": "object",
@@ -953,10 +970,7 @@
                 "properties": {
                     "datetime": { "type": "string", "format": "date-time", "example": "2025-08-15T00:00:00Z" },
                     "number": { "type": "integer", "format": "int32", "example": 42 },
-                    "companyId": { "type": "integer", "format": "int32", "example": 1 },
-                    "totalAmountExcludingVat": { "type": "number", "example": 100000.0, "minimum": 0.0 },
-                    "vatAmount22Percent": { "type": "number", "example": 22000.0, "minimum": 0.0 },
-                    "totalAmountIncludingVat": { "type": "number", "example": 122000.0, "minimum": 0.0 }
+                    "companyId": { "type": "integer", "format": "int32", "example": 1 }
                 }
             },
             "SpecificationResponse": {
@@ -1072,6 +1086,20 @@
                 }
             },
             "CountResponse": { "type": "object", "properties": { "count": { "type": "integer", "format": "int64" } } },
+            "IdPair": {
+                "type": "object",
+                "properties": {
+                    "id1": { "type": "integer", "format": "int32" },
+                    "id2": { "type": "integer", "format": "int32" }
+                }
+            },
+            "ListGroupResponse": {
+                "type": "object",
+                "properties": {
+                    "groupResponses": { "type": "array", "items": { "$ref": "#/components/schemas/GroupResponse" } },
+                    "intersections": { "type": "array", "items": { "$ref": "#/components/schemas/IdPair" } }
+                }
+            },
             "SimpleStatsResponse": {
                 "type": "object",
                 "properties": {

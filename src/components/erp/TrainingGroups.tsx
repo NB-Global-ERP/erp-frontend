@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {Grid, HeaderMenu, type IApi, type IFilterValues} from '@svar-ui/react-grid';
-import {Calendar, CalendarCheck, ChevronDown, Pen, Plus, RefreshCw, TrendingUp, Users, Wallet, X} from 'lucide-react';
+import {AlertTriangle, Calendar, CalendarCheck, ChevronDown, Pen, Plus, RefreshCw, TrendingUp, Users, Wallet, X} from 'lucide-react';
 import { Locale } from '@svar-ui/react-core';
 import { TrainingGroupForm } from './TrainingGroupForm';
 import { GroupParticipants } from './GroupParticipants';
@@ -27,6 +27,7 @@ export function TrainingGroups() {
     showDetailRef.current = showDetail;
 
     const { groups, isLoading } = useGroups();
+    const idsOfGroup = useERPStore((state) => state.idsOfGroup);
 
     useEffect(() => {
         if (!selectedGroup) return;
@@ -110,6 +111,14 @@ export function TrainingGroups() {
             {selectedGroup && showDetail && (
                 <GroupDetailPanel
                     group={selectedGroup}
+                    conflictingWith={idsOfGroup
+                        .filter(p => p.id1 === selectedGroup.id || p.id2 === selectedGroup.id)
+                        .map(p => {
+                            const partnerId = p.id1 === selectedGroup.id ? p.id2 : p.id1;
+                            const partner = groups.find(g => g.id === partnerId);
+                            return { id: partnerId, courseName: (partner as GroupWithCourse)?.courseName || `Группа #${partnerId}` };
+                        })
+                    }
                     onEdit={() => setShowForm(true)}
                     onShowParticipants={() => setShowParticipants(true)}
                     onClose={() => setShowDetail(false)}
@@ -139,12 +148,13 @@ export function TrainingGroups() {
 
 interface GroupDetailPanelProps {
     group: GroupWithCourse;
+    conflictingWith?: { id: number; courseName: string }[];
     onEdit: () => void;
     onShowParticipants: () => void;
     onClose: () => void;
 }
 
-function GroupDetailPanel({ group, onEdit, onShowParticipants, onClose }: GroupDetailPanelProps) {
+function GroupDetailPanel({ group, conflictingWith = [], onEdit, onShowParticipants, onClose }: GroupDetailPanelProps) {
     const formatDate = (d: Date | string) =>
         d ? new Date(d).toLocaleDateString('ru-RU') : '—';
 
@@ -227,14 +237,29 @@ function GroupDetailPanel({ group, onEdit, onShowParticipants, onClose }: GroupD
                 </div>
             </div>
 
-            {group.status && (
-                <div className="mt-3 flex items-center gap-2">
-                    <span className="text-xs text-gray-500">Статус:</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
-                        {group.status}
-                    </span>
-                </div>
-            )}
+            <div className="mt-3 flex items-center gap-3 flex-wrap">
+                {group.status && (
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Статус:</span>
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+                            {group.status}
+                        </span>
+                    </div>
+                )}
+                {conflictingWith.length > 0 && (
+                    <div className="flex items-start gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
+                        <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                            <span className="font-medium text-red-700">Пересечение с группами: </span>
+                            <span className="text-red-600">
+                                {conflictingWith.map((p, i) => (
+                                    <span key={p.id}>{i > 0 && ', '}<span className="font-medium">#{p.id}</span> {p.courseName}</span>
+                                ))}
+                            </span>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
