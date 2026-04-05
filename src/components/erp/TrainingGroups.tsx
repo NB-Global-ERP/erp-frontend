@@ -15,10 +15,9 @@ export function TrainingGroups() {
     const [api, setApi] = useState<IApi>();
     const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
-    const { groups, isLoading } = useGroups();
+    const { groups } = useGroups();
 
     const columns = [
-        { id: 'id', header: 'ID', width: 80 },
         { id: 'courseName', header: 'Курс', width: 180},
         { id: 'startDate', header: 'Дата начала', width: 120,
             template: (value: Date | string) => value ? new Date(value).toLocaleDateString('ru-RU') : '—'},
@@ -41,17 +40,6 @@ export function TrainingGroups() {
             }
         });
     }, []);
-
-    if (isLoading && groups.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
-                    <p className="mt-4 text-gray-500">Загрузка групп...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="space-y-4">

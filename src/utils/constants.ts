@@ -12,11 +12,11 @@ export const STATUS_OPTIONS_FOR_GRID = [
     { id: "cancelled", label: "Отменено" }
 ] as const;
 
-export const STATUS_MAPPER = {
-    "planned": "Планируется",
-    "in_progress": "В процессе",
-    "completed": "Завершено",
-    "cancelled": "Отменено"
+export const STATUS_MAPPER: Record<string, string> = {
+    "PLANNING": "Планируется",
+    "IN_PROCESS": "В процессе",
+    "COMPLETED": "Завершено",
+    "CANSELED": "Отменено"
 } as const;
 
 export const USER_ROLES = {

@@ -5,14 +5,11 @@ import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
 // import { GroupParticipants } from './GroupParticipants';
 import { X } from 'lucide-react';
-import {TIME} from "@/utils/constants.ts";
 import type {TrainingGroup} from "@/types/erp.types.ts";
 
 const groupSchema = z.object({
     courseId: z.number().min(1, 'Выберите курс'),
     dateBegin: z.string().min(1, 'Укажите дату начала'),
-    dateEnd: z.string().min(1, 'Укажите дату окончания'),
-    pricePerPerson: z.number().min(0, 'Цена не может быть отрицательной'),
     courseCompletionId: z.number().min(1, 'Выберите статус'),
     specificationId: z.number().min(1, 'Выберите спецификацию'),
 });
@@ -48,15 +45,11 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
         defaultValues: group ? {
             courseId: group.courseId,
             dateBegin: group.startDate.toISOString().split('T')[0],
-            dateEnd: group.endDate.toISOString().split('T')[0],
-            pricePerPerson: group.pricePerPerson,
             courseCompletionId: getStatusIdByName(group.status),
             specificationId: group.specificationId,
         } : {
             courseId: undefined,
             dateBegin: new Date().toISOString().split('T')[0],
-            dateEnd: new Date(Date.now() + TIME.WEEK).toISOString().split('T')[0],
-            pricePerPerson: 0,
             courseCompletionId: undefined,
             specificationId: undefined,
         },
@@ -67,8 +60,6 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
         const requestData = {
             courseId: data.courseId,
             dateBegin: new Date(data.dateBegin).toISOString(),
-            dateEnd: new Date(data.dateEnd).toISOString(),
-            pricePerPerson: data.pricePerPerson,
             courseCompletionId: data.courseCompletionId,
             specificationId: data.specificationId || 0,
         };
@@ -152,47 +143,17 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Дата начала *
-                                        </label>
-                                        <input
-                                            type="date"
-                                            {...register('dateBegin')}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                                        />
-                                        {errors.dateBegin && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.dateBegin.message}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Дата окончания *
-                                        </label>
-                                        <input
-                                            type="date"
-                                            {...register('dateEnd')}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                                        />
-                                        {errors.dateEnd && (
-                                            <p className="mt-1 text-sm text-red-600">{errors.dateEnd.message}</p>
-                                        )}
-                                    </div>
-                                </div>
-
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Цена за человека, ₽ *
+                                        Дата начала *
                                     </label>
                                     <input
-                                        type="number"
-                                        step="0.01"
-                                        {...register('pricePerPerson', { valueAsNumber: true })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        type="date"
+                                        {...register('dateBegin')}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                                     />
-                                    {errors.pricePerPerson && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.pricePerPerson.message}</p>
+                                    {errors.dateBegin && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.dateBegin.message}</p>
                                     )}
                                 </div>
 

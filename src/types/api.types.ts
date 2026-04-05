@@ -94,8 +94,6 @@ export interface StudentPatchRequest {
 export interface GroupRequest {
     courseId: number;
     dateBegin: string;
-    dateEnd: string;
-    pricePerPerson: number;
     courseCompletionId: number;
     specificationId: number;
 }
@@ -103,12 +101,7 @@ export interface GroupRequest {
 export interface GroupPatchRequest {
     courseId?: number;
     dateBegin?: string;
-    dateEnd?: string;
-    pricePerPerson?: number;
-    participantCount?: number;
-    groupPrice?: number;
     courseCompletionId?: number;
-    averageProgress?: number;
     specificationId?: number;
 }
 
