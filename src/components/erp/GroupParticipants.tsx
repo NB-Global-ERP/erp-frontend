@@ -18,7 +18,6 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
     const [members, setMembers] = useState<EnrichedMember[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    // memberId -> edited value (0-100)
     const [edits, setEdits] = useState<Record<number, string>>({});
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
@@ -84,7 +83,6 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
         }
     };
 
-    // API uses 0-1, display as 0-100%
     const toPercent = (v: number) => v * 100;
 
     const displayValue = (m: EnrichedMember) =>
@@ -102,7 +100,6 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[80vh]">
-                {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">
@@ -133,7 +130,6 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                     </div>
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 overflow-auto">
                     {loading && (
                         <div className="p-16 flex flex-col items-center gap-3">
@@ -237,7 +233,6 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                     )}
                 </div>
 
-                {/* Footer */}
                 {!loading && !error && members.length > 0 && (
                     <div className="px-6 py-3 border-t border-gray-100 flex items-center justify-between shrink-0">
                         <div className="text-sm text-gray-500 flex items-center gap-4">
@@ -252,7 +247,7 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                         </div>
                         <div className="flex items-center gap-3">
                             {saveError && (
-                                <span className="text-xs text-red-600 flex items-center gap-1">
+                                <span className="text-xs text-danger flex items-center gap-1">
                                     <AlertCircle className="w-3.5 h-3.5" />
                                     {saveError}
                                 </span>

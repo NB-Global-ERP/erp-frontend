@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
-import { X, AlertCircle, Loader2 } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 import type {TrainingGroup} from "@/types/erp.types.ts";
 
 const groupSchema = z.object({
@@ -24,7 +24,6 @@ interface TrainingGroupFormProps {
 export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormProps) {
     const [showConfirm, setShowConfirm] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const courses = useERPStore((state) => state.courses);
     const specifications = useERPStore((state) => state.specifications);
@@ -57,7 +56,6 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
 
     const onSubmit = async (data: GroupFormData) => {
         setSubmitError(null);
-        setIsSubmitting(true);
         try {
             const requestData = {
                 courseId: data.courseId,
@@ -74,8 +72,6 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
             onSave();
         } catch (e: unknown) {
             setSubmitError(e instanceof Error ? e.message : 'Произошла ошибка');
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
