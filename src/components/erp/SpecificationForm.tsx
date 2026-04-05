@@ -34,11 +34,7 @@ export function SpecificationForm({ spec, onClose, onSave }: SpecificationFormPr
     const isEditing = !!spec;
 
     const linkedGroups = groups.filter(g => g.specificationId === spec?.id);
-
-    const totalAmount = linkedGroups.reduce((sum, g) => sum + (g.totalCost || 0), 0);
-    const vatAmount = totalAmount * 0.22;
-    const totalWithVat = totalAmount + vatAmount;
-
+    
     const { register, handleSubmit, formState: { errors } } = useForm<SpecFormData>({
         resolver: zodResolver(specSchema),
         defaultValues: spec
@@ -61,10 +57,7 @@ export function SpecificationForm({ spec, onClose, onSave }: SpecificationFormPr
         const requestData = {
             datetime: isoDateTime,
             number: data.number,
-            companyId: data.companyId,
-            totalAmountExcludingVat: totalAmount,
-            vatAmount22Percent: vatAmount,
-            totalAmountIncludingVat: totalWithVat,
+            companyId: data.companyId
         };
 
         if (isEditing && spec) {
@@ -184,23 +177,6 @@ export function SpecificationForm({ spec, onClose, onSave }: SpecificationFormPr
                                             );
                                         })
                                     )}
-                                </div>
-                            </div>
-                        )}
-
-                        {isEditing && linkedGroups.length > 0 && (
-                            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Сумма без НДС:</span>
-                                    <span className="font-medium">{formatCurrency(totalAmount)}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">НДС (22%):</span>
-                                    <span className="font-medium">{formatCurrency(vatAmount)}</span>
-                                </div>
-                                <div className="flex justify-between pt-2 border-t border-gray-200">
-                                    <span className="font-semibold text-gray-800">Итого с НДС:</span>
-                                    <span className="font-bold text-primary-600">{formatCurrency(totalWithVat)}</span>
                                 </div>
                             </div>
                         )}

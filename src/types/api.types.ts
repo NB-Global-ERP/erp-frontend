@@ -109,9 +109,6 @@ export interface SpecificationRequest {
     datetime: string;
     number: number;
     companyId: number;
-    totalAmountExcludingVat: number;
-    vatAmount22Percent: number;
-    totalAmountIncludingVat: number;
 }
 
 export type SpecificationPatchRequest = Partial<SpecificationRequest>
