@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { X, Loader2, AlertCircle, Users, RefreshCw, Save, ChevronUp, ChevronDown } from 'lucide-react';
-import { getGroupMembers, patchGroupMembers } from '@/services/api';
+import { X, Loader2, AlertCircle, Users, RefreshCw, Save, ChevronUp, ChevronDown, UserPlus, Award, CheckCircle, Eye } from 'lucide-react';
+import { getGroupMembers, patchGroupMembers, addStudentsToGroup, getEmployees, createCertificateForStudent, getCertificate } from '@/services/api';
 import { getStudentRaw } from '@/services/rawApi';
 import { mapEmployee } from '@/utils/adapters';
 import type { TrainingGroup, GroupMember, Employee } from '@/types/erp.types';
@@ -21,6 +21,20 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
     const [edits, setEdits] = useState<Record<number, string>>({});
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
+
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
+    const [selectedStudentId, setSelectedStudentId] = useState<string>('');
+    const [initialProgress, setInitialProgress] = useState<string>('0');
+    const [adding, setAdding] = useState(false);
+    const [addError, setAddError] = useState<string | null>(null);
+
+    const [certLoading, setCertLoading] = useState<number | null>(null);
+    const [certDone, setCertDone] = useState<Set<number>>(new Set());
+    const [certError, setCertError] = useState<Record<number, string>>({});
+    const [certIds, setCertIds] = useState<Record<number, string>>({});
+    const [viewLoading, setViewLoading] = useState<number | null>(null);
+    const [viewError, setViewError] = useState<Record<number, string>>({});
 
     const hasEdits = Object.keys(edits).length > 0;
 
@@ -82,6 +96,62 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
         }
     };
 
+    const openAddForm = async () => {
+        setShowAddForm(true);
+        setSelectedStudentId('');
+        setInitialProgress('0');
+        setAddError(null);
+        try {
+            const employees = await getEmployees();
+            setAllEmployees(employees);
+        } catch {
+            setAllEmployees([]);
+        }
+    };
+
+    const handleAddStudent = async () => {
+        if (!selectedStudentId) return;
+        setAdding(true);
+        setAddError(null);
+        try {
+            await addStudentsToGroup(group.id, Number(selectedStudentId), Number(initialProgress) / 100);
+            setShowAddForm(false);
+            await load();
+        } catch (e: unknown) {
+            setAddError(e instanceof Error ? e.message : 'Ошибка добавления');
+        } finally {
+            setAdding(false);
+        }
+    };
+
+    const handleIssueCertificate = async (m: EnrichedMember) => {
+        setCertLoading(m.studentId);
+        setCertError(prev => { const n = { ...prev }; delete n[m.studentId]; return n; });
+        try {
+            const res = await createCertificateForStudent(m.studentId, group.id);
+            setCertDone(prev => new Set(prev).add(m.studentId));
+            if (res.id) setCertIds(prev => ({ ...prev, [m.studentId]: res.id }));
+        } catch (e: unknown) {
+            setCertError(prev => ({ ...prev, [m.studentId]: e instanceof Error ? e.message : 'Ошибка' }));
+        } finally {
+            setCertLoading(null);
+        }
+    };
+
+    const handleViewCertificate = async (m: EnrichedMember) => {
+        setViewLoading(m.studentId);
+        setViewError(prev => { const n = { ...prev }; delete n[m.studentId]; return n; });
+        try {
+            const blob = await getCertificate(certIds[m.studentId], m.studentId, group.id);
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        } catch (e: unknown) {
+            setViewError(prev => ({ ...prev, [m.studentId]: e instanceof Error ? e.message : 'Ошибка' }));
+        } finally {
+            setViewLoading(null);
+        }
+    };
+
     const toPercent = (v: number) => v * 100;
 
     const displayValue = (m: EnrichedMember) =>
@@ -98,7 +168,7 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[80vh]">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col max-h-[80vh]">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">
@@ -111,13 +181,22 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                     </div>
                     <div className="flex items-center gap-2">
                         {!loading && !saving && (
-                            <button
-                                onClick={load}
-                                className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                            >
-                                <RefreshCw className="w-3.5 h-3.5" />
-                                Обновить
-                            </button>
+                            <>
+                                <button
+                                    onClick={openAddForm}
+                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-white bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors"
+                                >
+                                    <UserPlus className="w-3.5 h-3.5" />
+                                    Добавить
+                                </button>
+                                <button
+                                    onClick={load}
+                                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                >
+                                    <RefreshCw className="w-3.5 h-3.5" />
+                                    Обновить
+                                </button>
+                            </>
                         )}
                         <button
                             onClick={onClose}
@@ -128,6 +207,64 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                         </button>
                     </div>
                 </div>
+
+                {showAddForm && (
+                    <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex flex-col gap-3">
+                        <p className="text-sm font-medium text-gray-700">Добавить участника</p>
+                        <div className="flex items-end gap-3">
+                            <div className="flex-1">
+                                <label className="block text-xs text-gray-500 mb-1">Сотрудник</label>
+                                <select
+                                    value={selectedStudentId}
+                                    onChange={e => setSelectedStudentId(e.target.value)}
+                                    disabled={adding}
+                                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary-300 disabled:opacity-50"
+                                >
+                                    <option value="">— выберите сотрудника —</option>
+                                    {allEmployees
+                                        .filter(e => !members.some(m => m.studentId === e.id))
+                                        .map(e => (
+                                            <option key={e.id} value={e.id}>{e.fullName}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                            <div className="w-32">
+                                <label className="block text-xs text-gray-500 mb-1">Начальный прогресс, %</label>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    max={100}
+                                    value={initialProgress}
+                                    onChange={e => setInitialProgress(e.target.value)}
+                                    disabled={adding}
+                                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary-300 disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                            </div>
+                            <button
+                                onClick={handleAddStudent}
+                                disabled={!selectedStudentId || adding}
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white text-sm rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+                                {adding ? 'Добавление...' : 'Добавить'}
+                            </button>
+                            <button
+                                onClick={() => setShowAddForm(false)}
+                                disabled={adding}
+                                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        {addError && (
+                            <div className="flex items-center gap-2 text-xs text-red-600">
+                                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                {addError}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div className="flex-1 overflow-auto">
                     {loading && (
@@ -158,7 +295,8 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                                             <th className="text-left py-3 px-4 font-medium text-gray-500 w-10">#</th>
                                             <th className="text-left py-3 px-4 font-medium text-gray-500">ФИО</th>
                                             <th className="text-left py-3 px-4 font-medium text-gray-500">Email</th>
-                                            <th className="text-left py-3 px-4 font-medium text-gray-500 w-52">Прогресс</th>
+                                            <th className="text-left py-3 px-4 font-medium text-gray-500 w-80">Прогресс</th>
+                                            <th className="py-3 px-4 w-64"></th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
@@ -220,6 +358,53 @@ export function GroupParticipants({ group, onClose }: GroupParticipantsProps) {
                                                                     <ChevronUp className="w-3.5 h-3.5" />
                                                                 </button>
                                                             </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-2.5 px-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <button
+                                                                onClick={() => handleIssueCertificate(m)}
+                                                                disabled={saving || certLoading === m.studentId}
+                                                                title={certError[m.studentId]}
+                                                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:cursor-not-allowed whitespace-nowrap ${
+                                                                    certDone.has(m.studentId)
+                                                                        ? 'text-green-700 bg-green-50 hover:bg-green-100'
+                                                                        : certError[m.studentId]
+                                                                        ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                                                                        : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                                                                }`}
+                                                            >
+                                                                {certLoading === m.studentId
+                                                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                                    : certDone.has(m.studentId)
+                                                                    ? <CheckCircle className="w-3.5 h-3.5" />
+                                                                    : <Award className="w-3.5 h-3.5" />
+                                                                }
+                                                                {certLoading === m.studentId
+                                                                    ? 'Выдача...'
+                                                                    : certDone.has(m.studentId)
+                                                                    ? 'Выдан'
+                                                                    : certError[m.studentId]
+                                                                    ? 'Ошибка'
+                                                                    : 'Сертификат'
+                                                                }
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleViewCertificate(m)}
+                                                                disabled={saving || viewLoading === m.studentId}
+                                                                title={viewError[m.studentId]}
+                                                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:cursor-not-allowed whitespace-nowrap ${
+                                                                    viewError[m.studentId]
+                                                                        ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                                                                        : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                                                                }`}
+                                                            >
+                                                                {viewLoading === m.studentId
+                                                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                                    : <Eye className="w-3.5 h-3.5" />
+                                                                }
+                                                                {viewLoading === m.studentId ? 'Загрузка...' : 'Просмотреть'}
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>

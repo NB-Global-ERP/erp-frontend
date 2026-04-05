@@ -97,6 +97,30 @@ export const addStudentToGroup = async (
 ): Promise<void> =>
     raw.addStudentToGroupRaw(groupId, studentId);
 
+export const createCertificateForStudent = async (
+    studentId: number,
+    groupId: number
+): Promise<{ id: string }> =>
+    raw.createCertificateForStudentRaw(studentId, groupId);
+
+export const getCertificate = async (
+    certId: string | undefined,
+    studentId: number,
+    groupId: number
+): Promise<Blob> =>
+    certId
+        ? raw.getCertificateRaw({ certificateId: certId })
+        : raw.getCertificateRaw({ studentId, groupId });
+
+export const addStudentsToGroup = async (
+    groupId: number,
+    studentId: number,
+    initialProgress = 0
+): Promise<{ ids: number[] }> =>
+    raw.addStudentsToGroupMembersRaw({
+        studentAdditionals: [{ studentId, groupId, initialProgress }],
+    });
+
 export const checkGroupDataEnd = async (id: number, dataBegin: string): Promise<string> => {
     const response = await raw.checkGroupEndData(id, dataBegin);
     return response.dataEnd;

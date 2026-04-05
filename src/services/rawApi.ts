@@ -100,6 +100,17 @@ export const deleteGroupRaw = (id: number): Promise<void> =>
 export const addStudentToGroupRaw = (groupId: number, studentId: number): Promise<void> =>
     apiClient.post(`/groups/${groupId}/add/student/${studentId}`);
 
+export const createCertificateForStudentRaw = (studentId: number, groupId: number): Promise<{ id: string }> =>
+    apiClient.post(`/certificates/students/${studentId}/groups/${groupId}`);
+
+export const getCertificateRaw = (params: { certificateId?: string; studentId?: number; groupId?: number }): Promise<Blob> =>
+    apiClient.get('/certificates', { params, responseType: 'blob' });
+
+export const addStudentsToGroupMembersRaw = (data: {
+    studentAdditionals: { studentId: number; groupId: number; initialProgress?: number }[];
+}): Promise<{ ids: number[] }> =>
+    apiClient.post('/group-members/add/students', data);
+
 export const checkGroupEndData = (id: number, dataBegin: string): Promise<{ dataEnd: string }> =>
     apiClient.post('/groups/check', { params: { id, dataBegin } });
 
