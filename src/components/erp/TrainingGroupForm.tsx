@@ -164,17 +164,24 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Спецификация *
                                 </label>
-                                <select
-                                    {...register('specificationId', {valueAsNumber: true})}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                >
-                                    <option value="">Выберите спецификацию</option>
-                                    {specifications.map(spec => (
-                                        <option key={spec.id} value={spec.id}>
-                                            Спецификация №{spec.number} от {spec.date.toLocaleDateString('ru-RU')}
-                                        </option>
-                                    ))}
-                                </select>
+                                {isEditing ? (
+                                    <div
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700">
+                                        {`Спецификация №${specifications.find(s => s.id === group?.courseId)?.number || 'XXX'}`}
+                                    </div>
+                                ) : (
+                                    <select
+                                        {...register('specificationId', {valueAsNumber: true})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    >
+                                        <option value="">Выберите спецификацию</option>
+                                        {specifications.map(spec => (
+                                            <option key={spec.id} value={spec.id}>
+                                                Спецификация №{spec.number} от {spec.date.toLocaleDateString('ru-RU')}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
                             </div>
 
                             <div className="flex justify-between gap-3 pt-4">
