@@ -10,6 +10,7 @@ import StatusSpan from "@/components/ui/StatusSpan.tsx";
 import {STATUS_MAPPER, TIME} from "@/utils/constants.ts";
 
 const scales = [
+    { unit: 'day', step: 1, format: formatDayMonthRu, label: "день" },
     { unit: 'week', step: 1, format: formatDayMonthRu, label: "неделя" },
     { unit: 'month', step: 1, format: formatMonthYearRu, label: "месяц" },
     { unit: 'quarter', step: 1, format: '%Q-й %Y', label: "квартал" },
