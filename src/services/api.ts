@@ -74,8 +74,11 @@ export const updateEmployee = async (id: number, data: StudentPatchRequest): Pro
 export const deleteEmployee = async (id: number): Promise<void> =>
     raw.deleteStudentRaw(id);
 
-export const getGroups = async (): Promise<TrainingGroup[]> =>
-    (await raw.getGroupsRaw()).map(mapGroup);
+export const getGroups = async (): Promise<TrainingGroup[]> => {
+    const data = await raw.getGroupsRaw();
+    const list = Array.isArray(data) ? data : (data as any)?.content ?? (data as any)?.groups ?? [];
+    return list.map(mapGroup);
+};
 
 export const getGroup = async (id: number): Promise<TrainingGroup> =>
     mapGroup(await raw.getGroupRaw(id));

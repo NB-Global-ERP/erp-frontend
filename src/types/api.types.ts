@@ -38,19 +38,6 @@ export interface CourseResponse {
     pricePerPerson: number;
 }
 
-export interface GroupResponse {
-    id: number;
-    courseId: number;
-    dateBegin: string;
-    dateEnd: string;
-    pricePerPerson: number;
-    participantCount: number;
-    groupPrice: number;
-    courseCompletion: string;
-    averageProgress: number;
-    specificationId: number;
-}
-
 export interface SpecificationResponse {
     id: number;
     date: string;
