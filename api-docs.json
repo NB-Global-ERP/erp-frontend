@@ -1,0 +1,1095 @@
+{
+    "openapi": "3.1.0",
+    "info": { "title": "OpenAPI definition", "version": "v0" },
+    "servers": [{ "url": "http://localhost:8091", "description": "Generated server url" }],
+    "paths": {
+        "/api/v1/students": {
+            "get": {
+                "tags": ["student-controller"],
+                "operationId": "getAll",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/StudentResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["student-controller"],
+                "operationId": "create",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StudentRequest" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateResponse" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["student-controller"],
+                "operationId": "delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["student-controller"],
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/StudentPatchRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/StudentResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/specifications": {
+            "get": {
+                "tags": ["specification-controller"],
+                "operationId": "getById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SpecificationResponse" } } }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["specification-controller"],
+                "operationId": "create_1",
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/SpecificationRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateResponse" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["specification-controller"],
+                "operationId": "delete_1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["specification-controller"],
+                "operationId": "update_1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/SpecificationPatchRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SpecificationResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/mail/test-email": {
+            "post": {
+                "tags": ["mail-controller"],
+                "operationId": "testEmail",
+                "responses": {
+                    "200": { "description": "OK", "content": { "*/*": { "schema": { "type": "string" } } } }
+                }
+            }
+        },
+        "/api/v1/groups": {
+            "get": {
+                "tags": ["group-controller"],
+                "operationId": "getById_1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/GroupResponse" } } }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["group-controller"],
+                "operationId": "create_2",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GroupRequest" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateResponse" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["group-controller"],
+                "operationId": "delete_2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["group-controller"],
+                "operationId": "update_2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/GroupPatchRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/GroupResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/group-members/add/students": {
+            "post": {
+                "tags": ["group-member-controller"],
+                "operationId": "addStudentToGroup",
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/AddStudentToGroupRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/AddStudentToGroupResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/courses": {
+            "get": {
+                "tags": ["course-controller"],
+                "operationId": "getById_2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CourseResponse" } } }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["course-controller"],
+                "operationId": "create_3",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CourseRequest" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateResponse" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["course-controller"],
+                "operationId": "delete_3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["course-controller"],
+                "operationId": "update_3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/CoursePatchRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CourseResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/course-completion-statuses": {
+            "get": {
+                "tags": ["course-completion-status-controller"],
+                "operationId": "getById_3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": { "schema": { "$ref": "#/components/schemas/CourseCompletionStatusResponse" } }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["course-completion-status-controller"],
+                "operationId": "create_4",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/CourseCompletionStatusRequest" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateResponse" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["course-completion-status-controller"],
+                "operationId": "delete_4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["course-completion-status-controller"],
+                "operationId": "update_4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/CourseCompletionStatusPatchRequest" }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": { "schema": { "$ref": "#/components/schemas/CourseCompletionStatusResponse" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies": {
+            "get": {
+                "tags": ["company-controller"],
+                "operationId": "getAll_1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/CompanyResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["company-controller"],
+                "operationId": "create_5",
+                "requestBody": {
+                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompanyRequest" } } },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateResponse" } } }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["company-controller"],
+                "operationId": "delete_5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["company-controller"],
+                "operationId": "update_5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": { "schema": { "$ref": "#/components/schemas/CompanyPatchRequest" } }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CompanyResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/certificates/students/{studentId}/groups/{groupId}": {
+            "post": {
+                "tags": ["certificate-controller"],
+                "operationId": "createCertificateForStudent",
+                "parameters": [
+                    {
+                        "name": "studentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    },
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CreateCertificateResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/group-members/{groupId}": {
+            "get": {
+                "tags": ["group-member-controller"],
+                "operationId": "getByGroupId",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/GroupMemberResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["group-member-controller"],
+                "operationId": "delete_6",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": { "$ref": "#/components/schemas/GroupMemberPatchRequest" }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": { "200": { "description": "OK" } }
+            },
+            "patch": {
+                "tags": ["group-member-controller"],
+                "operationId": "patchByGroupId",
+                "parameters": [
+                    {
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": { "$ref": "#/components/schemas/GroupMemberPatchRequest" }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/GroupMemberResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/students/{id}": {
+            "get": {
+                "tags": ["student-controller"],
+                "operationId": "getById_4",
+                "parameters": [
+                    { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int32" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/StudentResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/students/analytics/risk": {
+            "get": {
+                "tags": ["student-controller"],
+                "operationId": "getRisk",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/StudentRiskResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/specifications/list": {
+            "get": {
+                "tags": ["specification-controller"],
+                "operationId": "getList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/SpecificationResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/specifications/count": {
+            "get": {
+                "tags": ["specification-controller"],
+                "operationId": "count",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CountResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/groups/list": {
+            "get": {
+                "tags": ["group-controller"],
+                "operationId": "getList_1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/GroupResponse" } }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/groups/analytics/count": {
+            "get": {
+                "tags": ["group-controller"],
+                "operationId": "rowsNum",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CountResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/groups/analytics/basicStats/timeStats": {
+            "get": {
+                "tags": ["group-controller"],
+                "operationId": "timeStats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SimpleStatsResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/groups/analytics/basicStats/pricePerPerson": {
+            "get": {
+                "tags": ["group-controller"],
+                "operationId": "pricePerPersonStats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SimpleStatsResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/courses/list": {
+            "get": {
+                "tags": ["course-controller"],
+                "operationId": "getList_2",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/CourseResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/courses/analytics/count": {
+            "get": {
+                "tags": ["course-controller"],
+                "operationId": "rowsNum_1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "type": "integer", "format": "int64" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/courses/analytics/basicStats/dayDuration": {
+            "get": {
+                "tags": ["course-controller"],
+                "operationId": "basicStats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/SimpleStatsResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/course-completion-statuses/list": {
+            "get": {
+                "tags": ["course-completion-status-controller"],
+                "operationId": "getList_3",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/CourseCompletionStatusResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies/list": {
+            "get": {
+                "tags": ["company-controller"],
+                "operationId": "getList_4",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/components/schemas/CompanyResponse" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies/count": {
+            "get": {
+                "tags": ["company-controller"],
+                "operationId": "count_1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "$ref": "#/components/schemas/CountResponse" } } }
+                    }
+                }
+            }
+        },
+        "/api/v1/companies/analytics/companyStudentStats": {
+            "get": {
+                "tags": ["company-controller"],
+                "operationId": "companyStudentStats",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int32" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": { "schema": { "$ref": "#/components/schemas/CompanyStudentsStatsResponse" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/certificates": {
+            "get": {
+                "tags": ["certificate-controller"],
+                "operationId": "getCertificateForStudent",
+                "parameters": [
+                    {
+                        "name": "studentId",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "integer", "format": "int32" }
+                    },
+                    {
+                        "name": "groupId",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "integer", "format": "int32" }
+                    },
+                    { "name": "certificateId", "in": "query", "required": false, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": { "*/*": { "schema": { "type": "string", "format": "byte" } } }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "StudentRequest": {
+                "type": "object",
+                "properties": {
+                    "firstName": { "type": "string", "example": "Иван" },
+                    "middleName": { "type": "string", "example": "Петрович" },
+                    "lastName": { "type": "string", "example": "Иванов" },
+                    "companyId": { "type": "integer", "format": "int32", "example": 1 },
+                    "email": { "type": "string", "example": "ivanov@example.com" }
+                },
+                "required": ["companyId", "firstName", "lastName", "middleName"]
+            },
+            "CreateResponse": { "type": "object", "properties": { "id": { "type": "integer", "format": "int32" } } },
+            "SpecificationRequest": {
+                "type": "object",
+                "properties": {
+                    "datetime": { "type": "string", "format": "date-time", "example": "2025-08-15T00:00:00Z" },
+                    "number": { "type": "integer", "format": "int32", "example": 42 },
+                    "companyId": { "type": "integer", "format": "int32", "example": 1 },
+                    "totalAmountExcludingVat": { "type": "number", "example": 100000.0, "minimum": 0.0 },
+                    "vatAmount22Percent": { "type": "number", "example": 22000.0, "minimum": 0.0 },
+                    "totalAmountIncludingVat": { "type": "number", "example": 122000.0, "minimum": 0.0 }
+                },
+                "required": [
+                    "companyId",
+                    "datetime",
+                    "totalAmountExcludingVat",
+                    "totalAmountIncludingVat",
+                    "vatAmount22Percent"
+                ]
+            },
+            "GroupRequest": {
+                "type": "object",
+                "properties": {
+                    "courseId": { "type": "integer", "format": "int32", "example": 1 },
+                    "dateBegin": { "type": "string", "format": "date-time", "example": "2025-09-01T09:00:00Z" },
+                    "courseCompletionId": { "type": "integer", "format": "int32", "example": 1 },
+                    "specificationId": { "type": "integer", "format": "int32", "example": 1 }
+                },
+                "required": ["courseCompletionId", "courseId", "dateBegin", "specificationId"]
+            },
+            "AddStudentToGroupRequest": {
+                "type": "object",
+                "properties": {
+                    "studentAdditionals": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/StudentAdditional" }
+                    }
+                }
+            },
+            "StudentAdditional": {
+                "type": "object",
+                "properties": {
+                    "studentId": { "type": "integer", "format": "int32", "example": 1 },
+                    "groupId": { "type": "integer", "format": "int32", "example": 1 },
+                    "initialProgress": { "type": "number", "format": "float", "example": 0 }
+                },
+                "required": ["groupId", "studentId"]
+            },
+            "AddStudentToGroupResponse": {
+                "type": "object",
+                "properties": { "ids": { "type": "array", "items": { "type": "integer", "format": "int32" } } }
+            },
+            "CourseRequest": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string", "example": "Java для начинающих" },
+                    "description": { "type": "string", "example": "Базовый курс по Java с нуля" },
+                    "durationInDays": { "type": "integer", "format": "int32", "example": 30 },
+                    "pricePerPerson": { "type": "number", "example": 15000.0, "minimum": 0.0 }
+                },
+                "required": ["description", "name", "pricePerPerson"]
+            },
+            "CourseCompletionStatusRequest": {
+                "type": "object",
+                "properties": { "name": { "type": "string", "example": "В процессе" } },
+                "required": ["name"]
+            },
+            "CompanyRequest": {
+                "type": "object",
+                "properties": {
+                    "companyCode": { "type": "string", "example": "GLBL", "maxLength": 4, "minLength": 0 },
+                    "companyName": { "type": "string", "example": "Global ERP" }
+                },
+                "required": ["companyCode", "companyName"]
+            },
+            "CreateCertificateResponse": { "type": "object", "properties": { "id": { "type": "string" } } },
+            "StudentPatchRequest": {
+                "type": "object",
+                "properties": {
+                    "firstName": { "type": "string", "example": "Иван" },
+                    "middleName": { "type": "string", "example": "Петрович" },
+                    "lastName": { "type": "string", "example": "Иванов" },
+                    "companyId": { "type": "integer", "format": "int32", "example": 1 },
+                    "email": { "type": "string", "example": "ivanov@example.com" }
+                }
+            },
+            "StudentResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "firstName": { "type": "string" },
+                    "middleName": { "type": "string" },
+                    "lastName": { "type": "string" },
+                    "companyId": { "type": "integer", "format": "int32" },
+                    "email": { "type": "string" }
+                }
+            },
+            "SpecificationPatchRequest": {
+                "type": "object",
+                "properties": {
+                    "datetime": { "type": "string", "format": "date-time", "example": "2025-08-15T00:00:00Z" },
+                    "number": { "type": "integer", "format": "int32", "example": 42 },
+                    "companyId": { "type": "integer", "format": "int32", "example": 1 },
+                    "totalAmountExcludingVat": { "type": "number", "example": 100000.0, "minimum": 0.0 },
+                    "vatAmount22Percent": { "type": "number", "example": 22000.0, "minimum": 0.0 },
+                    "totalAmountIncludingVat": { "type": "number", "example": 122000.0, "minimum": 0.0 }
+                }
+            },
+            "SpecificationResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "datetime": { "type": "string", "format": "date-time" },
+                    "number": { "type": "integer", "format": "int32" },
+                    "companyId": { "type": "integer", "format": "int32" },
+                    "totalAmountExcludingVat": { "type": "number" },
+                    "vatAmount22Percent": { "type": "number" },
+                    "totalAmountIncludingVat": { "type": "number" }
+                }
+            },
+            "GroupPatchRequest": {
+                "type": "object",
+                "properties": {
+                    "courseId": { "type": "integer", "format": "int32", "example": 1 },
+                    "dateBegin": { "type": "string", "format": "date-time", "example": "2025-09-01T09:00:00Z" },
+                    "courseCompletionId": { "type": "integer", "format": "int32", "example": 1 },
+                    "specificationId": { "type": "integer", "format": "int32", "example": 1 }
+                }
+            },
+            "GroupResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "courseId": { "type": "integer", "format": "int32" },
+                    "dateBegin": { "type": "string", "format": "date-time" },
+                    "dateEnd": { "type": "string", "format": "date-time" },
+                    "pricePerPerson": { "type": "number" },
+                    "participantCount": { "type": "integer", "format": "int64" },
+                    "groupPrice": { "type": "number" },
+                    "courseCompletion": { "type": "string" },
+                    "averageProgress": { "type": "number", "format": "float" },
+                    "specificationId": { "type": "integer", "format": "int32" }
+                }
+            },
+            "GroupMemberPatchRequest": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32", "example": 1 },
+                    "completionPercent": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0.75,
+                        "maximum": 1.0,
+                        "minimum": 0.0
+                    }
+                }
+            },
+            "GroupMemberResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "studentId": { "type": "integer", "format": "int32" },
+                    "groupId": { "type": "integer", "format": "int32" },
+                    "completionPercent": { "type": "number", "format": "float" }
+                }
+            },
+            "CoursePatchRequest": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string", "example": "Java для начинающих" },
+                    "description": { "type": "string", "example": "Базовый курс по Java с нуля" },
+                    "durationInDays": { "type": "integer", "format": "int32", "example": 30 },
+                    "pricePerPerson": { "type": "number", "example": 15000.0, "minimum": 0.0 }
+                }
+            },
+            "CourseResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "durationInDays": { "type": "integer", "format": "int32" },
+                    "pricePerPerson": { "type": "number" }
+                }
+            },
+            "CourseCompletionStatusPatchRequest": {
+                "type": "object",
+                "properties": { "name": { "type": "string", "example": "Завершён" } }
+            },
+            "CourseCompletionStatusResponse": {
+                "type": "object",
+                "properties": { "id": { "type": "integer", "format": "int32" }, "name": { "type": "string" } }
+            },
+            "CompanyPatchRequest": {
+                "type": "object",
+                "properties": {
+                    "companyCode": { "type": "string", "example": "GLBL", "maxLength": 4, "minLength": 0 },
+                    "companyName": { "type": "string", "example": "Global ERP" }
+                }
+            },
+            "CompanyResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer", "format": "int32" },
+                    "companyCode": { "type": "string" },
+                    "companyName": { "type": "string" }
+                }
+            },
+            "StudentRiskResponse": {
+                "type": "object",
+                "properties": {
+                    "studentId": { "type": "integer", "format": "int32" },
+                    "firstName": { "type": "string" },
+                    "lastName": { "type": "string" },
+                    "groupId": { "type": "integer", "format": "int32" },
+                    "completionPercent": { "type": "number", "format": "double" },
+                    "timeProgress": { "type": "number", "format": "double" },
+                    "riskLevel": { "type": "string" }
+                }
+            },
+            "CountResponse": { "type": "object", "properties": { "count": { "type": "integer", "format": "int64" } } },
+            "SimpleStatsResponse": {
+                "type": "object",
+                "properties": {
+                    "sum": { "type": "integer", "format": "int64" },
+                    "avg": { "type": "number", "format": "double" },
+                    "min": { "type": "integer", "format": "int32" },
+                    "max": { "type": "integer", "format": "int32" }
+                }
+            },
+            "CompanyStudentsStatsResponse": {
+                "type": "object",
+                "properties": {
+                    "totalStudents": { "type": "integer", "format": "int64" },
+                    "currentPercent": { "type": "number", "format": "double" },
+                    "historicalPercent": { "type": "number", "format": "double" },
+                    "avgCompletion": { "type": "number", "format": "double" }
+                }
+            }
+        }
+    }
+}

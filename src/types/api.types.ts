@@ -145,3 +145,15 @@ export interface CourseBasicStatsResponse {
     min: number;
     max: number;
 }
+
+export interface GroupMemberResponse {
+    id: number;
+    studentId: number;
+    groupId: number;
+    completionPercent: number;
+}
+
+export interface GroupMemberPatchRequest {
+    id: number;
+    completionPercent: number; // 0.0 – 1.0
+}

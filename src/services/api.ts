@@ -5,7 +5,7 @@ import {
     mapGroup,
     mapSpecification,
     mapCompany,
-    mapStatuses, mapStats
+    mapStatuses, mapStats, mapGroupMember
 } from '@/utils/adapters';
 
 import type {
@@ -14,7 +14,7 @@ import type {
     TrainingGroup,
     Specification,
     Company, Status,
-    CourseBasicStats
+    CourseBasicStats, GroupMember
 } from '@/types/erp.types';
 
 import type {
@@ -94,6 +94,15 @@ export const addStudentToGroup = async (
     studentId: number
 ): Promise<void> =>
     raw.addStudentToGroupRaw(groupId, studentId);
+
+export const getGroupMembers = async (groupId: number): Promise<GroupMember[]> =>
+    (await raw.getGroupMembersRaw(groupId)).map(mapGroupMember);
+
+export const patchGroupMembers = async (
+    groupId: number,
+    patches: { id: number; completionPercent: number }[]
+): Promise<GroupMember[]> =>
+    (await raw.patchGroupMembersRaw(groupId, patches)).map(mapGroupMember);
 
 export const getSpecifications = async (): Promise<Specification[]> =>
     (await raw.getSpecificationsRaw()).map(mapSpecification);

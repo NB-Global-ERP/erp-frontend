@@ -33,6 +33,13 @@ export interface TrainingGroup {
     specificationId?: number;
 }
 
+export interface GroupMember {
+    id: number;
+    studentId: number;
+    groupId: number;
+    completionPercent: number;
+}
+
 export interface Specification {
     id: number;
     date: Date;

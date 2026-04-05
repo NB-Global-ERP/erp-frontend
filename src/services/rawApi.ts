@@ -20,7 +20,9 @@ import type {
     CompanyPatchRequest,
     CourseCompletionStatusRequest,
     CourseCompletionStatusPatchRequest,
-    CourseBasicStatsResponse
+    CourseBasicStatsResponse,
+    GroupMemberResponse,
+    GroupMemberPatchRequest
 } from '@/types/api.types';
 
 export const apiClient = axios.create({
@@ -97,6 +99,12 @@ export const deleteGroupRaw = (id: number): Promise<void> =>
 
 export const addStudentToGroupRaw = (groupId: number, studentId: number): Promise<void> =>
     apiClient.post(`/groups/${groupId}/add/student/${studentId}`);
+
+export const getGroupMembersRaw = (groupId: number): Promise<GroupMemberResponse[]> =>
+    apiClient.get(`/group-members/${groupId}`);
+
+export const patchGroupMembersRaw = (groupId: number, data: GroupMemberPatchRequest[]): Promise<GroupMemberResponse[]> =>
+    apiClient.patch(`/group-members/${groupId}`, data);
 
 export const getSpecificationsRaw = (): Promise<SpecificationResponse[]> =>
     apiClient.get('/specifications/list');
