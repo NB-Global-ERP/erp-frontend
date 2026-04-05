@@ -22,101 +22,13 @@ const columns = [
     { id: 'assigned', header: 'Статус', width: 75, cell: StatusSpan },
 ];
 
-const markers = [
-        {
-            start: new Date(Date.now()),
-            text: 'Сегодня',
-        },
-];
-
-const MOCK_GROUPS = [
-    {
-        id: 1,
-        courseId: 1,
-        startDate: new Date(2026, 3, 1),
-        endDate: new Date(2026, 3, 15),
-        pricePerPerson: 15000,
-        participantCount: 12,
-        totalCost: 180000,
-        averageProgress: 25,
-        status: 'PLANNING',
-        specificationId: null,
-    },
-    {
-        id: 2,
-        courseId: 2,
-        startDate: new Date(2026, 3, 10),
-        endDate: new Date(2026, 4, 5),
-        pricePerPerson: 25000,
-        participantCount: 8,
-        totalCost: 200000,
-        averageProgress: 45,
-        status: 'IN_PROCESS',
-        specificationId: 1,
-    },
-    {
-        id: 3,
-        courseId: 1,
-        startDate: new Date(2026, 4, 15),
-        endDate: new Date(2026, 4, 30),
-        pricePerPerson: 15000,
-        participantCount: 10,
-        totalCost: 150000,
-        averageProgress: 0,
-        status: 'PLANNING',
-        specificationId: null,
-    },
-    {
-        id: 4,
-        courseId: 3,
-        startDate: new Date(2026, 2, 1),
-        endDate: new Date(2026, 2, 20),
-        pricePerPerson: 30000,
-        participantCount: 6,
-        totalCost: 180000,
-        averageProgress: 100,
-        status: 'COMPLETED',
-        specificationId: 2,
-    },
-    {
-        id: 5,
-        courseId: 2,
-        startDate: new Date(2026, 5, 1),
-        endDate: new Date(2026, 5, 20),
-        pricePerPerson: 25000,
-        participantCount: 15,
-        totalCost: 375000,
-        averageProgress: 10,
-        status: 'IN_PROCESS',
-        specificationId: null,
-    },
-    {
-        id: 6,
-        courseId: 3,
-        startDate: new Date(2026, 3, 20),
-        endDate: new Date(2026, 4, 10),
-        pricePerPerson: 30000,
-        participantCount: 5,
-        totalCost: 150000,
-        averageProgress: 60,
-        status: 'IN_PROCESS',
-        specificationId: 1,
-    },
-];
-
-const MOCK_COURSES = [
-    { id: 1, name: 'JavaScript Basic', durationDays: 14, price: 15000 },
-    { id: 2, name: 'React Advanced', durationDays: 21, price: 25000 },
-    { id: 3, name: 'TypeScript Master', durationDays: 20, price: 30000 },
-];
-
 export function TrainingGantt() {
     const [scaleIndex, setScaleIndex] = useState(0);
     const [ganttKey, setGanttKey] = useState(0);
 
-    const groups = MOCK_GROUPS;
-    const courses = MOCK_COURSES;
-    const statuses = [{id: 1, name: 'PLANNING'}, {id: 1, name: 'IN_PROCESS'}, {id: 1, name: 'COMPLETED'}];
+    const groups = useERPStore((state) => state.groups);
+    const courses = useERPStore((state) => state.courses);
+    const statuses = useERPStore((state) => state.statuses);
 
 
     const [pendingChanges, setPendingChanges] = useState<Map<number, any>>(new Map());
@@ -250,7 +162,6 @@ export function TrainingGantt() {
                         init={init}
                         columns={columns}
                         scales={[scales[scaleIndex]]}
-                        markers={markers}
                     />
                 </Locale>
             </div>
