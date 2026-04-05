@@ -26,14 +26,13 @@ export function TrainingGroups() {
     selectedGroupRef.current = selectedGroup;
     showDetailRef.current = showDetail;
 
-    const { groups } = useGroups();
+    const { groups, isLoading } = useGroups();
 
     useEffect(() => {
         if (!selectedGroup) return;
         const updated = groups.find(g => g.id === selectedGroup.id);
         if (updated) setSelectedGroup(updated);
     }, [groups]);
-    const isLoading = useERPStore((state) => state.isLoading);
     const fetchAllData = useERPStore((state) => state.fetchAllData);
 
     const handleRefresh = async () => {
@@ -190,32 +189,32 @@ function GroupDetailPanel({ group, onEdit, onShowParticipants, onClose }: GroupD
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <DetailCard
-                    icon={<Calendar className="w-4 h-4 text-blue-500" />}
+                    icon={<Calendar className="w-4 h-4 text-primary-500" />}
                     label="Дата начала"
                     value={formatDate(group.startDate)}
-                    bg="bg-blue-50"
+                    bg="bg-primary-50"
                 />
                 <DetailCard
-                    icon={<CalendarCheck className="w-4 h-4 text-indigo-500" />}
+                    icon={<CalendarCheck className="w-4 h-4 text-primary-500" />}
                     label="Дата окончания"
                     value={formatDate(group.endDate)}
-                    bg="bg-indigo-50"
+                    bg="bg-primary-50"
                 />
                 <DetailCard
-                    icon={<Users className="w-4 h-4 text-violet-500" />}
+                    icon={<Users className="w-4 h-4 text-primary-500" />}
                     label="Участников"
                     value={String(group.participantCount)}
-                    bg="bg-violet-50"
+                    bg="bg-primary-50"
                 />
                 <DetailCard
-                    icon={<Wallet className="w-4 h-4 text-emerald-500" />}
+                    icon={<Wallet className="w-4 h-4 text-primary-500" />}
                     label="Стоимость"
                     value={formatCurrency(group.totalCost)}
-                    bg="bg-emerald-50"
+                    bg="bg-primary-50"
                 />
                 <div className="bg-gray-50 rounded-lg p-3 flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <TrendingUp className="w-4 h-4 text-orange-500" />
+                        <TrendingUp className="w-4 h-4 text-primary-500" />
                         <span>Прогресс</span>
                     </div>
                     <div className="text-base font-semibold text-gray-800">{progressPct}%</div>
