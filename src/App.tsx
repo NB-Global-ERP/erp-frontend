@@ -16,7 +16,7 @@ const tabs = [
     { id: 'groups', label: 'Группы', component: TrainingGroups },
     { id: 'specifications', label: 'Спецификации', component: Specifications },
     { id: 'courses', label: 'Курсы', component: Courses },
-    { id: 'employees', label: 'Сотрудники', component: Employees },
+    { id: 'employees', label: 'Студенты', component: Employees },
     { id: 'companies', label: 'Компании', component: Companies },
 ];
 

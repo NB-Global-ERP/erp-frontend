@@ -45,7 +45,7 @@ export function Employees() {
                             className="flex items-center gap-2 px-4 py-2 bg-white border border-primary-500 text-primary-500 rounded-lg hover:bg-primary-50 transition-colors"
                         >
                             <Pen className="w-4 h-4"/>
-                            Редактировать сотрудника
+                            Редактировать студента
                         </button>
                     )}
                     <button
@@ -56,7 +56,7 @@ export function Employees() {
                         className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
                     >
                         <Plus className="w-4 h-4"/>
-                        Добавить сотрудника
+                        Добавить студента
                     </button>
                 </div>
             </div>

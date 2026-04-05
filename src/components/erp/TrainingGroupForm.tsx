@@ -22,7 +22,6 @@ interface TrainingGroupFormProps {
 }
 
 export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormProps) {
-    const [activeTab, setActiveTab] = useState<'info' | 'participants'>('info');
     const [showConfirm, setShowConfirm] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -105,92 +104,83 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                         </button>
                     </div>
 
-                    <div className="flex border-b border-gray-200 px-6">
-                        <button
-                            onClick={() => setActiveTab('info')}
-                            className={`px-4 py-2 font-medium transition-colors ${
-                                activeTab === 'info'
-                                    ? 'border-b-2 border-primary-500 text-primary-600'
-                                    : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            Основная информация
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('participants')}
-                            className={`px-4 py-2 font-medium transition-colors ${
-                                activeTab === 'participants'
-                                    ? 'border-b-2 border-primary-500 text-primary-600'
-                                    : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            Участники
-                        </button>
-                    </div>
-
                     <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                        {activeTab === 'info' && (
-                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Курс обучения *
-                                    </label>
-                                    <select
-                                        {...register('courseId', { valueAsNumber: true })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    >
-                                        <option value="">Выберите курс</option>
-                                        {courses.map(course => (
-                                            <option key={course.id} value={course.id}>
-                                                {course.name} ({course.price.toLocaleString('ru-RU')} ₽/чел)
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.courseId && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.courseId.message}</p>
-                                    )}
-                                </div>
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Курс обучения *
+                                </label>
+                                {isEditing ? (
+                                    <div
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700">
+                                        {courses.find(c => c.id === group?.courseId)?.name || 'Курс не найден'}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <select
+                                            {...register('courseId', {valueAsNumber: true})}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                        >
+                                            <option value="">Выберите курс</option>
+                                            {courses.map(course => (
+                                                <option key={course.id} value={course.id}>
+                                                    {course.name} ({course.price.toLocaleString('ru-RU')} ₽/чел)
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.courseId && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.courseId.message}</p>
+                                        )}
+                                    </>
+                                )}
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Дата начала *
-                                    </label>
-                                    <input
-                                        type="date"
-                                        {...register('dateBegin')}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                                    />
-                                    {errors.dateBegin && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.dateBegin.message}</p>
-                                    )}
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Дата начала *
+                                </label>
+                                <input
+                                    type="date"
+                                    {...register('dateBegin')}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+                                />
+                                {errors.dateBegin && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.dateBegin.message}</p>
+                                )}
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Статус *
-                                    </label>
-                                    <select
-                                        {...register('courseCompletionId', {valueAsNumber: true})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                    >
-                                        <option value="">Выберите статус</option>
-                                        {statuses.map(status => (
-                                            <option key={status.id} value={status.id}>
-                                                {status.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.courseCompletionId && (
-                                        <p className="mt-1 text-sm text-red-600">{errors.courseCompletionId.message}</p>
-                                    )}
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Статус *
+                                </label>
+                                <select
+                                    {...register('courseCompletionId', {valueAsNumber: true})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                >
+                                    <option value="">Выберите статус</option>
+                                    {statuses.map(status => (
+                                        <option key={status.id} value={status.id}>
+                                            {status.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.courseCompletionId && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.courseCompletionId.message}</p>
+                                )}
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Спецификация *
-                                    </label>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Спецификация *
+                                </label>
+                                {isEditing ? (
+                                    <div
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700">
+                                        {`Спецификация №${specifications.find(s => s.id === group?.courseId)?.number || 'XXX'}`}
+                                    </div>
+                                ) : (
                                     <select
-                                        {...register('specificationId', { valueAsNumber: true })}
+                                        {...register('specificationId', {valueAsNumber: true})}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     >
                                         <option value="">Выберите спецификацию</option>
@@ -200,8 +190,8 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                             </option>
                                         ))}
                                     </select>
-                                </div>
-
+                                )}
+                            </div>
                                 {submitError && (
                                     <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                                         <AlertCircle className="w-4 h-4 shrink-0" />
@@ -221,37 +211,23 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                             </button>
                                         </div>
                                     }
-                                    <div className="flex gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={onClose}
-                                            disabled={isSubmitting}
-                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                                        >
-                                            Отмена
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
-                                        >
-                                            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                                            {isEditing ? 'Сохранить' : 'Создать'}
-                                        </button>
-                                    </div>
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                                    >
+                                        {isEditing ? 'Сохранить' : 'Создать'}
+                                    </button>
                                 </div>
-                            </form>
-                        )}
-
-                        {/*activeTab === 'participants' && group && (*/}
-                        {/*    <GroupParticipants group={group} />*/}
-                        {/*)*/}
-
-                        {activeTab === 'participants' && !isEditing && (
-                            <div className="text-center py-8 text-gray-500">
-                                Сначала сохраните группу, чтобы добавить участников
                             </div>
-                        )}
+                        </form>
                     </div>
                 </div>
             </div>

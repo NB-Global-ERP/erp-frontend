@@ -99,6 +99,17 @@
     --wx-sidebar-close-icon: var(--color-gray-400);
 }
 
+.wx-right, .wx-left, .wx-resizer,
+.wx-progress-marker {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+.wx-resizer,
+.wx-resizer * {
+    cursor: default !important;
+}
+
 .wx-table-box, .wx-body, .wx-header {
     width: 100% !important;
 }
