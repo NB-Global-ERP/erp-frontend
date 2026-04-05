@@ -75,14 +75,7 @@ export function TrainingGantt() {
             cost: task.totalCost,
         });
     };
-
-    if (ganttTasks.length === 0) {
-        return (
-            <div className="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
-                Нет учебных групп для отображения на диаграмме Ганта
-            </div>
-        );
-    }
+    
 
     return (
         <div className="bg-white rounded-lg shadow-sm p-4 max-w-full">
