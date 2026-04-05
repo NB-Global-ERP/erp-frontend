@@ -35,7 +35,6 @@ export function TrainingGantt() {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     const updateGroup = useERPStore((state) => state.updateGroup);
-    const updateCourse = useERPStore((state) => state.updateCourse);
 
     const ganttTasks = useMemo(() => {
         return groups.map(group => {
@@ -50,7 +49,6 @@ export function TrainingGantt() {
                 text: course?.name || `Курс ${group.courseId}`,
                 start: start,
                 end: end,
-                courseId: group.courseId,
                 duration: duration,
                 progress: group.averageProgress,
                 color: getStatusColor(group.status),
@@ -63,17 +61,13 @@ export function TrainingGantt() {
 
     const handleTaskUpdate = (updatedTask: any) => {
         console.log('Task updated:', {
-            courseId: updatedTask.courseId,
             dateBegin: updatedTask.start.toISOString(),
-            durationInDays: updatedTask.duration,
         });
 
         setPendingChanges(prev => {
             const newMap = new Map(prev);
             newMap.set(updatedTask.id, {
-                courseId: updatedTask.courseId,
                 dateBegin: updatedTask.start.toISOString(),
-                durationInDays: updatedTask.duration,
             });
             return newMap;
         });
@@ -82,11 +76,7 @@ export function TrainingGantt() {
 
     const applyAllChanges = async () => {
         for (const [groupId, changes] of pendingChanges) {
-            await Promise.all([updateGroup(groupId, {
-                dateBegin: changes.dateBegin
-            }), updateCourse(changes.courseId, {
-                durationInDays: changes.durationInDays
-            })])
+            await updateGroup(groupId, changes);
         }
         setPendingChanges(new Map());
         setHasUnsavedChanges(false);
