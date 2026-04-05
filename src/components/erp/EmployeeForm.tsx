@@ -62,7 +62,7 @@ export function EmployeeForm({ employee, onClose, onSave }: EmployeeFormProps) {
                 <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
                     <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-800">
-                            {isEditing ? 'Редактирование сотрудника' : 'Новый сотрудник'}
+                            {isEditing ? 'Редактирование студента' : 'Новый студент'}
                         </h2>
                         <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg">
                             <X className="w-5 h-5 text-gray-500"/>
@@ -178,7 +178,7 @@ export function EmployeeForm({ employee, onClose, onSave }: EmployeeFormProps) {
                             Подтверждение удаления
                         </h3>
                         <p className="text-gray-600 mb-6">
-                            Вы уверены, что хотите удалить сотрудника?
+                            Вы уверены, что хотите удалить студента?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
