@@ -3,8 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useERPStore } from '@/stores/erpStore';
-// import { GroupParticipants } from './GroupParticipants';
-import { X } from 'lucide-react';
+import { X, AlertCircle, Loader2 } from 'lucide-react';
 import type {TrainingGroup} from "@/types/erp.types.ts";
 
 const groupSchema = z.object({
@@ -25,6 +24,8 @@ interface TrainingGroupFormProps {
 export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormProps) {
     const [activeTab, setActiveTab] = useState<'info' | 'participants'>('info');
     const [showConfirm, setShowConfirm] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const courses = useERPStore((state) => state.courses);
     const specifications = useERPStore((state) => state.specifications);
@@ -56,20 +57,27 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
     });
 
     const onSubmit = async (data: GroupFormData) => {
+        setSubmitError(null);
+        setIsSubmitting(true);
+        try {
+            const requestData = {
+                courseId: data.courseId,
+                dateBegin: new Date(data.dateBegin).toISOString(),
+                courseCompletionId: data.courseCompletionId,
+                specificationId: data.specificationId || 0,
+            };
 
-        const requestData = {
-            courseId: data.courseId,
-            dateBegin: new Date(data.dateBegin).toISOString(),
-            courseCompletionId: data.courseCompletionId,
-            specificationId: data.specificationId || 0,
-        };
-
-        if (isEditing && group) {
-            await updateGroup(group.id, requestData);
-        } else {
-            await addGroup(requestData);
+            if (isEditing && group) {
+                await updateGroup(group.id, requestData);
+            } else {
+                await addGroup(requestData);
+            }
+            onSave();
+        } catch (e: unknown) {
+            setSubmitError(e instanceof Error ? e.message : 'Произошла ошибка');
+        } finally {
+            setIsSubmitting(false);
         }
-        onSave();
     };
 
     const handleDeleteClick = () => {
@@ -194,6 +202,13 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                     </select>
                                 </div>
 
+                                {submitError && (
+                                    <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                                        <AlertCircle className="w-4 h-4 shrink-0" />
+                                        {submitError}
+                                    </div>
+                                )}
+
                                 <div className="flex justify-between gap-3 pt-4">
                                     {isEditing &&
                                         <div>
@@ -210,14 +225,17 @@ export function TrainingGroupForm({ group, onClose, onSave }: TrainingGroupFormP
                                         <button
                                             type="button"
                                             onClick={onClose}
-                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                            disabled={isSubmitting}
+                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                                         >
                                             Отмена
                                         </button>
                                         <button
                                             type="submit"
-                                            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                                            disabled={isSubmitting}
+                                            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
                                         >
+                                            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                                             {isEditing ? 'Сохранить' : 'Создать'}
                                         </button>
                                     </div>
