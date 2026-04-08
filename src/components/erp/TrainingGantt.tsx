@@ -206,65 +206,78 @@ export function TrainingGantt() {
                 const course = courses.find(c => c.id === group.courseId);
                 const progressPct = Math.round(group.averageProgress * 100);
                 const progressColor = progressPct >= 80 ? 'bg-green-500' : progressPct >= 40 ? 'bg-yellow-500' : 'bg-primary-500';
-                const conflictPairs = idsOfGroup.filter(p => p.id1 === selectedGroupId || p.id2 === selectedGroupId);
-                const conflictPartners = conflictPairs.map(p => {
-                    const partnerId = p.id1 === selectedGroupId ? p.id2 : p.id1;
-                    const partner = groups.find(g => g.id === partnerId);
-                    return { id: partnerId, name: courses.find(c => c.id === partner?.courseId)?.name || `Группа #${partnerId}` };
-                });
+                const conflictPartners = idsOfGroup
+                    .filter(p => p.id1 === selectedGroupId || p.id2 === selectedGroupId)
+                    .map(p => {
+                        const partnerId = p.id1 === selectedGroupId ? p.id2 : p.id1;
+                        const partner = groups.find(g => g.id === partnerId);
+                        return { id: partnerId, name: courses.find(c => c.id === partner?.courseId)?.name || `Группа #${partnerId}` };
+                    });
                 const formatDate = (d: Date | string) => d ? new Date(d).toLocaleDateString('ru-RU') : '—';
                 return (
-                    <div className="mt-3 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="font-semibold text-gray-700">
-                                {course?.name ?? `Группа #${group.id}`}
-                                <span className="ml-2 text-sm font-normal text-gray-400">#{group.id}</span>
-                            </span>
-                            <button
-                                onClick={() => setSelectedGroupId(null)}
-                                className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                            <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500"><Calendar className="w-4 h-4 text-primary-500" /><span>Дата начала</span></div>
-                                <div className="text-base font-semibold text-gray-800">{formatDate(group.startDate)}</div>
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedGroupId(null)}>
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-6" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center justify-between mb-5">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-lg bg-primary-100 flex items-center justify-center">
+                                        <Users className="w-5 h-5 text-primary-600" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900">{course?.name ?? `Группа #${group.id}`}</h3>
+                                        <p className="text-sm text-gray-500">Группа #{group.id}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedGroupId(null)}
+                                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
                             </div>
-                            <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500"><CalendarCheck className="w-4 h-4 text-primary-500" /><span>Дата окончания</span></div>
-                                <div className="text-base font-semibold text-gray-800">{formatDate(group.endDate)}</div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                                <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5 text-xs text-gray-500"><Calendar className="w-4 h-4 text-primary-500" /><span>Дата начала</span></div>
+                                    <div className="text-base font-semibold text-gray-800">{formatDate(group.startDate)}</div>
+                                </div>
+                                <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5 text-xs text-gray-500"><CalendarCheck className="w-4 h-4 text-primary-500" /><span>Дата окончания</span></div>
+                                    <div className="text-base font-semibold text-gray-800">{formatDate(group.endDate)}</div>
+                                </div>
+                                <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5 text-xs text-gray-500"><Users className="w-4 h-4 text-primary-500" /><span>Участников</span></div>
+                                    <div className="text-base font-semibold text-gray-800">{group.participantCount}</div>
+                                </div>
+                                <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
+                                    <div className="flex items-center gap-1.5 text-xs text-gray-500"><Wallet className="w-4 h-4 text-primary-500" /><span>Стоимость</span></div>
+                                    <div className="text-base font-semibold text-gray-800">{formatCurrency(group.totalCost)}</div>
+                                </div>
                             </div>
-                            <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500"><Users className="w-4 h-4 text-primary-500" /><span>Участников</span></div>
-                                <div className="text-base font-semibold text-gray-800">{group.participantCount}</div>
-                            </div>
-                            <div className="bg-primary-50 rounded-lg p-3 flex flex-col gap-1">
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500"><Wallet className="w-4 h-4 text-primary-500" /><span>Стоимость</span></div>
-                                <div className="text-base font-semibold text-gray-800">{formatCurrency(group.totalCost)}</div>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3 flex flex-col gap-2">
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500"><TrendingUp className="w-4 h-4 text-primary-500" /><span>Прогресс</span></div>
-                                <div className="text-base font-semibold text-gray-800">{progressPct}%</div>
-                                <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+
+                            <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-1.5 text-xs text-gray-500"><TrendingUp className="w-4 h-4 text-primary-500" /><span>Прогресс</span></div>
+                                    <span className="text-sm font-semibold text-gray-800">{progressPct}%</span>
+                                </div>
+                                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                                     <div className={`h-full rounded-full transition-all ${progressColor}`} style={{ width: `${Math.min(100, progressPct)}%` }} />
                                 </div>
                             </div>
-                        </div>
-                        {conflictPartners.length > 0 && (
-                            <div className="mt-3 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                                <div>
-                                    <span className="text-sm font-medium text-red-700">Пересечение с группами: </span>
-                                    <span className="text-sm text-red-600">
-                                        {conflictPartners.map((p, i) => (
-                                            <span key={p.id}>{i > 0 && ', '}<span className="font-medium">#{p.id}</span> {p.name}</span>
-                                        ))}
-                                    </span>
+
+                            {conflictPartners.length > 0 && (
+                                <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                    <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                                    <div className="text-sm">
+                                        <span className="font-medium text-red-700">Пересечение с группами: </span>
+                                        <span className="text-red-600">
+                                            {conflictPartners.map((p, i) => (
+                                                <span key={p.id}>{i > 0 && ', '}<span className="font-medium">#{p.id}</span> {p.name}</span>
+                                            ))}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 );
             })()}
